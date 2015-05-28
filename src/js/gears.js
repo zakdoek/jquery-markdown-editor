@@ -261,6 +261,16 @@
             return count;
         }
 
+        /**
+         * Get the state
+         */
+        function getState( cm ) {
+            /* global console */
+            console.log( "Get State", cm );
+
+            return {};
+        }
+
         // Shortcuts
         shortcuts  = {
             "Cmd-B": toggleBold,
@@ -290,7 +300,8 @@
             undo: undo,
             redo: redo,
             togglePreview: togglePreview,
-            wordCount: wordCount
+            wordCount: wordCount,
+            getState: getState
         };
 
         return Gears;
