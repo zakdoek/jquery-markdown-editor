@@ -1,102 +1,232 @@
-var path = require('path');
+/**
+ * Build file
+ */
 
-module.exports = function(grunt) {
-  var pkg = require('./package.json');
-  pkg.spm = pkg.spm || {};
-  pkg.spm.sourcedir = 'tmp/src';
-  pkg.spm.output = ['editor.js'];
+module.exports = function( grunt ) {
 
+  "use strict";
+
+  // Load the grunt tasks
+  require( "load-grunt-tasks" )( grunt );
+
+  // Time the grunt task
+  require( "time-grunt" )( grunt );
+
+  var pkg = require( "./package.json" );
+
+  // Configuration
   grunt.initConfig({
     pkg: pkg,
-    connect: {
-      livereload: {
-        options: {
-          port: 8000,
-          middleware: function(connect) {
-            return [
-              require('connect-livereload')(),
-              connect.static(path.resolve('build')),
-              connect.directory(path.resolve('build'))
-            ];
-          }
-        }
-      },
+
+    // Clean
+    clean: {
+      build: ["dist", ".cache" ]
     },
-    watch: {
-      editor: {
-        files: ['*.css', 'src/*'],
-        tasks: ['build'],
+
+    // Copy
+    copy: {
+      prepare: {
+        files: [
+          {
+            src: "bower_components/CodeMirror/lib/codemirror.css",
+            dest: ".cache/scss/_codemirror.scss"
+          },
+          {
+            src: "bower_components/CodeMirror/theme/base16-light.css",
+            dest: ".cache/scss/_codemirror-theme.scss"
+          }
+        ],
+      },
+      bower: {
+        files: [
+          {
+            src: "bower.json",
+            dest: "dist/bower.json"
+          },
+          {
+            expand: true,
+            cwd: "src/scss",
+            src: "**/*.scss",
+            dest: "dist"
+          },
+          {
+            src: ".cache/scss/_codemirror.scss",
+            dest: "dist/_codemirror.scss"
+          },
+          {
+            src: ".cache/scss/_codemirror-theme.scss",
+            dest: "dist/_codemirror-theme.scss"
+          },
+          {
+            src: ".cache/scss/_jquery-markdown-editor-codes.scss",
+            dest: "dist/_jquery-markdown-editor-codes.scss"
+          },
+          {
+            src: "src/fontello/config.json",
+            dest: "dist/fontello.json"
+          }
+        ]
+      }
+    },
+
+    // Fontello
+    fontello: {
+      build: {
         options: {
-          livereload: true
+          scss: true,
+          force: true,
+          config: "src/fontello/config.json",
+          fonts: "dist/fonts",
+          styles: ".cache/scss"
         }
       }
     },
-    transport: {
-      seajs: {
+
+    // Compass
+    compass: {
+      options: {
+        sassDir: "src/scss",
+        relativeAssets: true,
+        importPath: [
+          ".cache/scss",
+          "bower_components"
+        ],
+        cssDir: "dist",
+        fontsDir: "dist/fonts"
+      },
+
+      development: {
         options: {
-          dest: 'tmp/src/editor.js',
-          header: 'define(function(require, exports, module) {',
-          footer: [
-            'module.exports = Editor',
-            '});'
-          ].join('\n')
+          outputStyle: "nested"
         }
       },
-      component: {
+
+      build: {
         options: {
-          dest: 'index.js',
-          header: '',
-          footer: 'module.exports = Editor'
+          outputStyle: "compressed"
+        }
+      }
+    },
+
+    // jshint
+    jshint: {
+      options: {
+        jshintrc: true
+      },
+
+      gruntfile: {
+        src: "Gruntfile.js"
+      },
+
+      build: {
+        src: "src/js/**/*.js"
+      }
+    },
+
+    // Requirejs
+    requirejs: {
+      options: {
+        baseUrl: "bower_components",
+        name: "jquery-markdown-editor/jquery-editor",
+        paths: {
+          "jquery-markdown-editor": "../src/js",
+
+          // Exclude from source compilation
+          "jquery": "empty:",
+          "CodeMirror": "empty:",
+          "marked": "empty:"
         }
       },
-      window: {}
+
+      development: {
+        options: {
+          optimize: "none",
+          out: "dist/jquery-markdown-editor.js"
+        }
+      },
+
+      build: {
+        options: {
+          optimize: "uglify2",
+          out: "dist/jquery-markdown-editor.min.js"
+        }
+      }
+    },
+
+    // Release to bower
+    "gh-pages": {
+      bower: {
+        base: "build",
+        branch: "master",
+        message: "Release v<%= pkg.version %>",
+        repo: "https://github.com/zakdoek/jquery-markdown-editor-bower",
+        tag: "<%= pkg.version %>"
+      },
+      src: "**/*"
+    },
+
+    // Watch
+    watch: {
+      bowerFile: {
+        files: "bower.json",
+        tasks: [ "copy:prepare", "copy:bower" ]
+      },
+
+      fontello: {
+        files: [
+          "src/fontello/config.json",
+          "src/scss/_fontello.scss"
+        ],
+        tasks: [
+          "fontello:build",
+          "compass:development"
+        ]
+      },
+
+      compass: {
+        files: "src/scss/**/*.scss",
+        tasks: [ "compass:development" ]
+      },
+
+      gruntfile: {
+        files: "Gruntfile.js",
+        tasks: [ "jshint:gruntfile" ]
+      },
+
+      requirejs: {
+        files: "src/js/**/*.js",
+        tasks: [ "jshint:build", "requirejs:development" ]
+      }
+
     }
+
   });
 
-  grunt.registerTask('concat', function() {
-    var data = grunt.file.read('vendor/codemirror.js');
-    data = data.replace('window.CodeMirror', 'var CodeMirror');
-    ['continuelist', 'xml', 'markdown'].forEach(function(name) {
-      data += '\n' + grunt.file.read('vendor/' + name + '.js');
-    });
-    data += '\n' + grunt.file.read('src/intro.js');
-    data += '\n' + grunt.file.read('src/editor.js');
-    grunt.file.write('tmp/editor.js', data);
-  });
+  // Tasks
+  grunt.registerTask( "development", [
+    "jshint",
+    "clean",
+    "copy:prepare",
+    "fontello",
+    "compass:development",
+    "requirejs:development",
+    "copy:bower",
+    "watch"
+  ] );
+  grunt.registerTask( "build", [
+    "jshint",
+    "clean",
+    "copy:prepare",
+    "fontello",
+    "compass:build",
+    "requirejs:development",
+    "requirejs:build",
+    "copy:bower"
+  ] );
+  grunt.registerTask( "release", [
+    "build",
+    "gh-pages:bower"
+  ] );
+  grunt.registerTask( "default", [ "build" ] );
 
-  grunt.registerMultiTask('transport', function() {
-    var options = this.options({
-      src: 'tmp/editor.js',
-      dest: 'build/editor.js',
-      header: '(function(global) {',
-      footer: 'global.Editor = Editor;\n})(this);'
-    });
-    var data = grunt.file.read(options.src);
-    data = [options.header, data, options.footer].join('\n');
-    grunt.file.write(options.dest, data);
-  });
-
-  grunt.registerTask('copy', function() {
-    var dir = 'vendor/icomoon/fonts';
-    grunt.file.recurse(dir, function(fpath) {
-      var fname = path.relative(dir, fpath);
-      grunt.file.copy(fpath, path.join('build', 'fonts', fname));
-    });
-    var data = grunt.file.read('vendor/icomoon/style.css');
-    data += grunt.file.read('paper.css');
-    data += grunt.file.read('editor.css');
-    grunt.file.write('build/editor.css', data);
-    grunt.file.copy('docs/index.html', 'build/index.html');
-    grunt.file.copy('docs/markdown.md', 'build/markdown.md');
-    grunt.file.copy('docs/markdown.html', 'build/markdown.html');
-    grunt.file.copy('docs/yue.css', 'build/yue.css');
-    grunt.file.copy('docs/marked.js', 'build/marked.js');
-  });
-
-  grunt.loadNpmTasks('grunt-contrib-connect');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-
-  grunt.registerTask('build', ['concat', 'transport:window', 'copy']);
-  grunt.registerTask('server', ['build', 'connect', 'watch']);
-  grunt.registerTask('default', ['server']);
 };

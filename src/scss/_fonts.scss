@@ -1,0 +1,63 @@
+/**
+ * The fontello bootstrap file
+ */
+
+// Load the font
+$jquery-markdown-editor-fonts-helper-active: false !default;
+$jquery-markdown-editor-font-path: "/fonts/" !default;
+@if $jquery-markdown-editor-fonts-helper-active {
+    @font-face {
+        font-family: 'jquery-markdown-editor';
+        src: url(jquery-markdown-editor-fonts-helper("jquery-markdown-editor.eot"));
+        src: url(jquery-markdown-editor-fonts-helper("jquery-markdown-editor.eot#iefix")) format('embedded-opentype'),
+        url(jquery-markdown-editor-fonts-helper("jquery-markdown-editor.woff")) format('woff'),
+        url(jquery-markdown-editor-fonts-helper("jquery-markdown-editor.ttf")) format('truetype'),
+        url(jquery-markdown-editor-fonts-helper("jquery-markdown-editor.svg#project")) format('svg');
+        font-weight: normal;
+        font-style: normal;
+    }
+} @else {
+    @font-face {
+        font-family: 'jquery-markdown-editor';
+        src: url('#{$jquery-markdown-editor-font-path}jquery-markdown-editor.eot');
+        src: url('#{$jquery-markdown-editor-font-path}jquery-markdown-editor.eot#iefix') format('embedded-opentype'),
+        url('#{$jquery-markdown-editor-font-path}jquery-markdown-editor.woff') format('woff'),
+        url('#{$jquery-markdown-editor-font-path}jquery-markdown-editor.ttf') format('truetype'),
+        url('#{$jquery-markdown-editor-font-path}jquery-markdown-editor.svg#project') format('svg');
+        font-weight: normal;
+        font-style: normal;
+    }
+}
+
+// Set some properties per icon
+[class^="jquery-markdown-editor-"]:before, [class*=" fontello-"]:before {
+    font-family: "jquery-markdown-editor";
+    font-style: normal;
+    font-weight: normal;
+    speak: none;
+
+    display: inline-block;
+    text-decoration: inherit;
+    width: 1em;
+    margin-right: .2em;
+    text-align: center;
+    /* opacity: .8; */
+
+    /* For safety - reset parent styles, that can break glyph codes*/
+    font-variant: normal;
+    text-transform: none;
+
+    /* fix buttons height, for twitter bootstrap */
+    line-height: 1em;
+
+    /* Animation center compensation - margins should be symmetric */
+    /* remove if not needed */
+    margin-left: .2em;
+
+    /* Font smoothing. That was taken from TWBS */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+// Import codes from generator
+@import "./jquery-markdown-editor-codes";

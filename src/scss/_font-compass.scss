@@ -1,0 +1,9 @@
+/**
+ * Compass font loader
+ */
+
+$jquery-markdown-editor-fonts-helper-compass-cache-buster: false !default;
+$jquery-markdown-editor-fonts-helper-active: true;
+@function jquery-markdown-editor-fonts-helper($path) {
+    @return font-url($path, true, $jquery-markdown-editor-fonts-helper-compass-cache-buster);
+}

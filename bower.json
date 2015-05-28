@@ -1,0 +1,20 @@
+{
+  "name": "jquery-markdown-editor",
+  "version": "0.1.0",
+  "homepage": "https://github.com/zakdoek/jquery-markdown-editor",
+  "authors": [
+    "(zakdoek <t_o_mvandamme@hotmail.com>)"
+  ],
+  "description": "A jquery markdown editor plugin based on https://github.com/lepture/editor",
+  "keywords": [
+    "jquery",
+    "markdown",
+    "editor"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "CodeMirror": "~5.3.0",
+    "marked": "~0.3.3"
+  },
+  "devDependencies": {}
+}
