@@ -15,7 +15,7 @@ define([
      *
      * $element     The element in which the toolbar will be created
      */
-    function Toolbar( $element, definitions ) {
+    function Toolbar( $parent, definitions ) {
 
         // Normalize the options
         if ( types.isUndefined( definitions ) ) {
@@ -23,7 +23,8 @@ define([
         }
 
         // Add the element
-        this._$element = $element;
+        this._$element = $( "<div></div>" );
+        this._$element.addClass( "toolbar" );
 
         // The item registry
         this._registry = {};
@@ -33,6 +34,9 @@ define([
 
         // Action listeners register
         this._actionListeners = [];
+
+        // Append to parent
+        $parent.append( this._$element );
     }
 
     /**
