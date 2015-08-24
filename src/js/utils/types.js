@@ -2,33 +2,56 @@
  * A type test library
  */
 
-define([], function() {
+(function() {
 
     "use strict";
 
-    var types = {};
+    ( function( window, factory ) {
 
-    /**
-     * A wrapper around typeof
-     */
-    types.isTypeOf = function( object, objectType ) {
-        return typeof object === objectType;
-    };
+        // universal module definition
 
-    /**
-     * Test if an object is undefined
-     */
-    types.isUndefined = function( object ) {
-        return types.isTypeOf( object, "undefined" );
-    };
+        /*global define: false, module: false */
 
-    /**
-     * Test if an object is defined
-     */
-    types.isDefined = function( object ) {
-        return !types.isUndefined( object );
-    };
+        if ( typeof define === "function" && define.amd ) {
+            // AMD
+            define( [], function() {
+                return factory();
+            });
+        } else if ( typeof exports === "object" ) {
+            // CommonJS
+            module.exports = factory();
+        } else {
+            // browser global
+            window.utils = window.utils || {};
+            window.utils.types = factory();
+        }
 
-    return types;
+    })( window, function() {
 
-});
+        var types = {};
+
+        /**
+         * A wrapper around typeof
+         */
+        types.isTypeOf = function( object, objectType ) {
+            return typeof object === objectType;
+        };
+
+        /**
+         * Test if an object is undefined
+         */
+        types.isUndefined = function( object ) {
+            return types.isTypeOf( object, "undefined" );
+        };
+
+        /**
+         * Test if an object is defined
+         */
+        types.isDefined = function( object ) {
+            return !types.isUndefined( object );
+        };
+
+        return types;
+    });
+
+})();

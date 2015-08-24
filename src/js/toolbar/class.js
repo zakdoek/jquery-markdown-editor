@@ -2,175 +2,208 @@
  * The toolbar object
  */
 
-define([
-    "jquery",
-    "app/utils/types",
-    "app/toolbar/defaults"
-], function( $, types, defaults ) {
+// jquery, ../utils/types, ./defaults
+
+(function() {
 
     "use strict";
 
-    /**
-     * Constructor
-     *
-     * $element     The element in which the toolbar will be created
-     */
-    function Toolbar( $parent, definitions ) {
+    ( function( window, factory ) {
 
-        // Normalize the options
-        if ( types.isUndefined( definitions ) ) {
-            definitions = defaults;
+        // universal module definition
+
+        /*global define: false, module: false, require: false */
+
+        if ( typeof define === "function" && define.amd ) {
+            // AMD
+            define( [
+                "jquery",
+                "../utils/types",
+                "./defaults"
+            ], function( $, types, defaults ) {
+                return factory( $, types, defaults );
+            });
+        } else if ( typeof exports === "object" ) {
+            // CommonJS
+            module.exports = factory(
+                require( "jquery" ),
+                require( "../utils/types" ),
+                require( "./defaults" )
+            );
+        } else {
+            // browser global
+            window.toolbar = window.toolbar || {};
+            window.toolbar.Toolbar = factory(
+                window.jQuery,
+                window.utils.types,
+                window.toolbar.defaults
+            );
         }
 
-        // Add the element
-        this._$element = $( "<div></div>" );
-        this._$element.addClass( "toolbar" );
+    })( window, function( $, types, defaults ) {
 
-        // The item registry
-        this._registry = {};
+        /**
+         * Constructor
+         *
+         * $element     The element in which the toolbar will be created
+         */
+        function Toolbar( $parent, definitions ) {
 
-        // Create toolbar element
-        this._init( definitions );
-
-        // Action listeners register
-        this._actionListeners = [];
-
-        // Append to parent
-        $parent.append( this._$element );
-    }
-
-    /**
-     * Create the toolbar
-     */
-    Toolbar.prototype._init = function( definitions ) {
-
-        // Expose to child scope
-        var self = this;
-
-        $.each( definitions, function( idx, value ) {
-
-            var $icon;
-
-            if ( value ) {
-                // Add actual icon
-                $icon = $( "<a></a>" );
-
-                // Add the icon class
-                $icon.addClass( value.iconClass );
-
-                // Add the title
-                $icon.attr( "title", value.title );
-
-                // Register handler
-                $icon.click(function() {
-                    self._triggerListeners( value.name );
-                });
-
-                // Add to registry
-                value.$element = $icon;
-                value.isActive = false;
-                self._registry[ value.name ] = value;
-
-            } else {
-                // Add a separator
-                $icon = $( "<i>|</i>" );
-                $icon.addClass( "separator" );
+            // Normalize the options
+            if ( types.isUndefined( definitions ) ) {
+                definitions = defaults;
             }
 
-            self._$element.append( $icon );
+            // Add the element
+            this._$element = $( "<div></div>" );
+            this._$element.addClass( "toolbar" );
 
-        });
-    };
+            // The item registry
+            this._registry = {};
 
-    /**
-     * Triggers listeners
-     */
-    Toolbar.prototype._triggerListeners = function( buttonId ) {
+            // Create toolbar element
+            this._init( definitions );
 
-        // Expand scope
-        var self = this;
+            // Action listeners register
+            this._actionListeners = [];
 
-        // Call all listeners
-        $.each( this._actionListeners, function( idx, value ) {
-            value.call( self, buttonId );
-        });
-    };
-
-    /**
-     * Get the button data
-     */
-    Toolbar.prototype._getData = function( buttonId ) {
-        return this._registry[ buttonId ];
-    };
-
-    /**
-     * Register a toolbar action listener.
-     *
-     * A callback that in the following form:
-     *
-     * function ( buttonId ) {
-     *
-     * }
-     *
-     * For example, the fullscreen button when not in fullscreen mode:
-     *  buttonId = "fullscreen"
-     */
-    Toolbar.prototype.addActionListener = function( callback ) {
-        this._actionListeners.push( callback );
-    };
-
-    /**
-     * Set a button to active
-     */
-    Toolbar.prototype.markActive = function( buttonId ) {
-        var data = this._getData( buttonId );
-
-        // Short circuit
-        if ( data.isActive ) {
-            return;
+            // Append to parent
+            $parent.append( this._$element );
         }
 
-        // Add active class if applicable
-        if ( types.isDefined( data.activeIconClass ) ) {
-            data.$element.addClass( data.activeIconClass )
-                         .removeClass( data.iconClass );
-        }
+        /**
+         * Create the toolbar
+         */
+        Toolbar.prototype._init = function( definitions ) {
 
-        // Add active title if applicable
-        if ( types.isDefined( data.activeTitle ) ) {
-            data.$element.attr( "title", data.activeTitle );
-        }
+            // Expose to child scope
+            var self = this;
 
-        // Mark as active
-        data.isActive = true;
-    };
+            $.each( definitions, function( idx, value ) {
 
-    /**
-     * Set a button to not active
-     */
-    Toolbar.prototype.markNotActive = function( buttonId ) {
-        var data = this._getData( buttonId );
+                var $icon;
 
-        // Short circuit
-        if ( !data.isActive ) {
-            return;
-        }
+                if ( value ) {
+                    // Add actual icon
+                    $icon = $( "<a></a>" );
 
-        // Strip active icon if applicable and restore regular class
-        if ( types.isDefined( data.activeIconClass ) ) {
-            data.$element.addClass( data.iconClass )
-                         .removeClass( data.activeIconClass );
-        }
+                    // Add the icon class
+                    $icon.addClass( value.iconClass );
 
-        // Strip active title if applicable and restore regular title
-        if ( types.isDefined( data.activeTitle ) ) {
-            data.$element.attr( "title", data.title );
-        }
+                    // Add the title
+                    $icon.attr( "title", value.title );
 
-        // Mark as not active
-        data.isActive = false;
-    };
+                    // Register handler
+                    $icon.click(function() {
+                        self._triggerListeners( value.name );
+                    });
 
-    return Toolbar;
+                    // Add to registry
+                    value.$element = $icon;
+                    value.isActive = false;
+                    self._registry[ value.name ] = value;
 
-});
+                } else {
+                    // Add a separator
+                    $icon = $( "<i>|</i>" );
+                    $icon.addClass( "separator" );
+                }
+
+                self._$element.append( $icon );
+
+            });
+        };
+
+        /**
+         * Triggers listeners
+         */
+        Toolbar.prototype._triggerListeners = function( buttonId ) {
+
+            // Expand scope
+            var self = this;
+
+            // Call all listeners
+            $.each( this._actionListeners, function( idx, value ) {
+                value.call( self, buttonId );
+            });
+        };
+
+        /**
+         * Get the button data
+         */
+        Toolbar.prototype._getData = function( buttonId ) {
+            return this._registry[ buttonId ];
+        };
+
+        /**
+         * Register a toolbar action listener.
+         *
+         * A callback that in the following form:
+         *
+         * function ( buttonId ) {
+         *
+         * }
+         *
+         * For example, the fullscreen button when not in fullscreen mode:
+         *  buttonId = "fullscreen"
+         */
+        Toolbar.prototype.addActionListener = function( callback ) {
+            this._actionListeners.push( callback );
+        };
+
+        /**
+         * Set a button to active
+         */
+        Toolbar.prototype.markActive = function( buttonId ) {
+            var data = this._getData( buttonId );
+
+            // Short circuit
+            if ( data.isActive ) {
+                return;
+            }
+
+            // Add active class if applicable
+            if ( types.isDefined( data.activeIconClass ) ) {
+                data.$element.addClass( data.activeIconClass )
+                             .removeClass( data.iconClass );
+            }
+
+            // Add active title if applicable
+            if ( types.isDefined( data.activeTitle ) ) {
+                data.$element.attr( "title", data.activeTitle );
+            }
+
+            // Mark as active
+            data.isActive = true;
+        };
+
+        /**
+         * Set a button to not active
+         */
+        Toolbar.prototype.markNotActive = function( buttonId ) {
+            var data = this._getData( buttonId );
+
+            // Short circuit
+            if ( !data.isActive ) {
+                return;
+            }
+
+            // Strip active icon if applicable and restore regular class
+            if ( types.isDefined( data.activeIconClass ) ) {
+                data.$element.addClass( data.iconClass )
+                             .removeClass( data.activeIconClass );
+            }
+
+            // Strip active title if applicable and restore regular title
+            if ( types.isDefined( data.activeTitle ) ) {
+                data.$element.attr( "title", data.title );
+            }
+
+            // Mark as not active
+            data.isActive = false;
+        };
+
+        return Toolbar;
+    });
+
+})();
