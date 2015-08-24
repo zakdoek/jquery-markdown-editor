@@ -46,26 +46,26 @@
     })( window, function( marked, Gears, CodeMirror ) {
 
         // Define default toolbar
-        // var toolbar = [
-        //     { name: "bold", action: Gears.toggleBold },
-        //     { name: "italic", action: Gears.toggleItalic },
-        //     { name: "code", action: Gears.toggleCodeBlock },
-        //     "|",
+        var toolbar = [
+            { name: "bold", action: Gears.toggleBold },
+            { name: "italic", action: Gears.toggleItalic },
+            { name: "code", action: Gears.toggleCodeBlock },
+            "|",
 
-        //     { name: "quote", action: Gears.toggleBlockquote },
-        //     { name: "unordered-list", action: Gears.toggleUnOrderedList },
-        //     { name: "ordered-list", action: Gears.toggleOrderedList },
-        //     "|",
+            { name: "quote", action: Gears.toggleBlockquote },
+            { name: "unordered-list", action: Gears.toggleUnOrderedList },
+            { name: "ordered-list", action: Gears.toggleOrderedList },
+            "|",
 
-        //     { name: "link", action: Gears.drawLink },
-        //     { name: "image", action: Gears.drawImage },
-        //     "|",
+            { name: "link", action: Gears.drawLink },
+            { name: "image", action: Gears.drawImage },
+            "|",
 
-        //     { name: "info", action: "http://lab.lepture.com/editor/" },
-        //     { name: "preview", action: Gears.togglePreview },
-        //     { name: "fullscreen", action: Gears.toggleFullScreen }
-        // ];
-        var toolbar = [];
+            { name: "info", action: "http://lab.lepture.com/editor/" },
+            { name: "preview", action: Gears.togglePreview },
+            { name: "fullscreen", action: Gears.toggleFullScreen }
+        ];
+        // var toolbar = [];
 
         /**
          * Interface of Editor.
