@@ -74,7 +74,7 @@
             // Create linecount if desired
             if ( this._options.lineCount ) {
                 $element = $( "<div>lines: </div>" );
-                $element.addClass( "status-block" );
+                $element.addClass( "status-block line-status" );
                 this._$lineCount = $( "<span></span>" );
                 this._$lineCount.addClass( "line-count" );
                 this._$lineCount.text( "0" );
@@ -85,7 +85,7 @@
             // Create wordcount if desired
             if ( this._options.wordCount ) {
                 $element = $( "<div>words: </div>" );
-                $element.addClass( "status-block" );
+                $element.addClass( "status-block word-status" );
                 this._$wordCount = $( "<span></span>" );
                 this._$wordCount.addClass( "word-count" );
                 this._$wordCount.text( "0" );
@@ -96,7 +96,7 @@
             // Create cursor position if desired
             if ( this._options.cursorPosition ) {
                 $element = $( "<div>:</div>" );
-                $element.addClass( "status-block" );
+                $element.addClass( "status-block cursor-status" );
                 this._$cursorLine = $( "<span></span>" );
                 this._$cursorLine.addClass( "cursor-line" );
                 this._$cursorLine.text( "0" );
@@ -116,7 +116,7 @@
         StatusBar.prototype.setWordCount = function( numWords ) {
 
             if ( this._options.lineCount ) {
-                this._$lineCount.text( numWords );
+                this._$wordCount.text( numWords );
             }
 
         };
@@ -127,7 +127,7 @@
         StatusBar.prototype.setLineCount = function( numLines ) {
 
             if ( this._options.wordCount ) {
-                this._$wordCount.text( numLines );
+                this._$lineCount.text( numLines );
             }
 
         };

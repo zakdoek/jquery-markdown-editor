@@ -22,7 +22,7 @@
          module.exports = factory();
      } else {
          // browser global
-         window.MarkdownEditorGears = factory();
+         window.gears = factory();
      }
 
     })( window, function() {
@@ -241,19 +241,21 @@
         /**
          * The right word count in respect for CJK.
          */
-        function wordCount( data ) {
+        function wordCount( codemirror ) {
             var pattern = new RegExp( "[a-zA-Z0-9_\\u0392-\\u03c9]+|" +
                                       "[\\u4E00-\\u9FFF\\u3400-\\u4dbf" +
                                       "\\uf900-\\ufaff\\u3040-\\u309f" +
-                                      "\\uac00-\\ud7af]+", "g" );
-            var m = data.match( pattern );
-            var count = 0;
-            if( m === null ) {
+                                      "\\uac00-\\ud7af]+", "g" ),
+                data = codemirror.getValue(),
+                match = data.match( pattern ),
+                count = 0;
+
+            if( match === null ) {
                 return count;
             }
-            for ( var i = 0; i < m.length; i++ ) {
-                if ( m[ i ].charCodeAt( 0 ) >= 0x4E00 ) {
-                    count += m[ i ].length;
+            for ( var i = 0; i < match.length; i++ ) {
+                if ( match[ i ].charCodeAt( 0 ) >= 0x4E00 ) {
+                    count += match[ i ].length;
                 } else {
                     count += 1;
                 }

@@ -16,6 +16,7 @@
          // AMD
          define( [
              "jquery",
+             "./gears",
              "./utils/types",
              "./toolbar/class",
              "./statusbar/class",
@@ -24,13 +25,14 @@
              "./tab-continuelist",
              "CodeMirror/mode/xml/xml",
              "CodeMirror/mode/markdown/markdown"
-         ], function( $, types, Toolbar, StatusBar, CodeMirror ) {
-             return factory( $, types, Toolbar, StatusBar, CodeMirror );
+         ], function( $, gears, types, Toolbar, StatusBar, CodeMirror ) {
+             return factory( $, gears, types, Toolbar, StatusBar, CodeMirror );
          });
      } else if ( typeof exports === "object" ) {
          // CommonJS
          module.exports = factory(
              require( "jquery" ),
+             require( "./gears" ),
              require( "./utils/types" ),
              require( "./toolbar/class" ),
              require( "./statusbar/class" ),
@@ -43,13 +45,14 @@
      } else {
          // browser global
          window.MarkdownEditor = factory( window.jQuery,
+                                          window.gears,
                                           window.utils.types,
                                           window.toolbar.Toolbar,
                                           window.statusBar.StatusBar,
                                           window.CodeMirror );
      }
 
-    })( window, function( $, types, Toolbar, StatusBar, CodeMirror ) {
+    })( window, function( $, gears, types, Toolbar, StatusBar, CodeMirror ) {
 
         /**
          * Interface of Editor.
@@ -76,7 +79,8 @@
          */
         Editor.prototype._init = function() {
 
-            var keyMaps = {};
+            var self = this,
+                keyMaps = {};
 
             // TODO: Add extra keymaps
 
@@ -115,9 +119,21 @@
             if ( this._options.statusBar !== false ) {
                 this._statusBar = new StatusBar( this._$wrapper,
                                                  this._options.statusBar );
-                this._statusBar.setLineCount( 5 );
-                this._statusBar.setWordCount( 100 );
-                this._statusBar.setCursorPosition( 2, 5 );
+
+                this.codemirror.on( "update", function() {
+                    // Update line count
+                    self._statusBar.setLineCount( self.codemirror.lineCount() );
+
+                    // Update word count
+                    self._statusBar.setWordCount(
+                        gears.wordCount( self.codemirror ) );
+                });
+
+                this.codemirror.on( "cursorActivity", function() {
+                    // Update cursor position
+                    var pos = self.codemirror.getCursor();
+                    self._statusBar.setCursorPosition( pos.line, pos.ch );
+                });
             }
 
         };
