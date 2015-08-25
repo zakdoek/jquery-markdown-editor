@@ -2,8 +2,9 @@
  * Main scss
  */
 
+@import "./variables";
 @import "./fonts";
 @import "./codemirror";
 @import "./codemirror-theme";
 @import "./editor";
-@import "./_editor-preview.scss";
+@import "./editor-preview";

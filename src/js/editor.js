@@ -93,6 +93,10 @@
                 // Add the toolbar
                 this._toolbar = new Toolbar( this._$wrapper,
                                              this._options.toolbar );
+
+                // Dummy active marking
+                this._toolbar.markActive( "bold" );
+                this._toolbar.markActive( "link" );
             }
 
             // Create the codemirror object

@@ -172,6 +172,9 @@
                 data.$element.attr( "title", data.activeTitle );
             }
 
+            // Add active class
+            data.$element.addClass( "active" );
+
             // Mark as active
             data.isActive = true;
         };
@@ -197,6 +200,9 @@
             if ( types.isDefined( data.activeTitle ) ) {
                 data.$element.attr( "title", data.title );
             }
+
+            // Remove active class
+            data.$element.removeClass( "active" );
 
             // Mark as not active
             data.isActive = false;

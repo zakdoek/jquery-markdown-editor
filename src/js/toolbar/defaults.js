@@ -65,7 +65,7 @@
         // A quote
         defaults.push({
             name: "quote",
-            iconClass: "jquery-markdown-editor-quote",
+            iconClass: "jquery-markdown-editor-quote-left",
             title: "Quote",
             activeTitle: "Unquote"
         });
