@@ -17,6 +17,7 @@
          define( [
              "jquery",
              "./gears",
+             "./defaults",
              "./utils/types",
              "./toolbar/class",
              "./statusbar/class",
@@ -25,14 +26,17 @@
              "./tab-continuelist",
              "CodeMirror/mode/xml/xml",
              "CodeMirror/mode/markdown/markdown"
-         ], function( $, gears, types, Toolbar, StatusBar, CodeMirror ) {
-             return factory( $, gears, types, Toolbar, StatusBar, CodeMirror );
+         ], function( $, gears, defaults, types, Toolbar, StatusBar,
+                      CodeMirror ) {
+             return factory( $, gears, defaults, types, Toolbar, StatusBar,
+                             CodeMirror );
          });
      } else if ( typeof exports === "object" ) {
          // CommonJS
          module.exports = factory(
              require( "jquery" ),
              require( "./gears" ),
+             require( "./defaults" ),
              require( "./utils/types" ),
              require( "./toolbar/class" ),
              require( "./statusbar/class" ),
@@ -48,20 +52,22 @@
          window.jqueryMarkdownEditor.Editor = factory(
              window.jQuery,
              window.jqueryMarkdownEditor.gears,
+             window.jqueryMarkdownEditor.defaults,
              window.jqueryMarkdownEditor.utils.types,
              window.jqueryMarkdownEditor.toolbar.Toolbar,
              window.jqueryMarkdownEditor.statusBar.StatusBar,
              window.CodeMirror );
      }
 
-    })( window, function( $, gears, types, Toolbar, StatusBar, CodeMirror ) {
+    })( window, function( $, gears, defaults, types, Toolbar, StatusBar,
+                          CodeMirror ) {
 
         /**
          * Interface of Editor.
          */
         function Editor( options ) {
-            // TODO: Mix with default options
-            this._options = options || {};
+            // Mix with default options
+            this._options = $.extend( {}, defaults, options );
 
             // Short circuit. A text area element is the minimum requirement
             // TODO: Add test if element is text area
@@ -178,6 +184,12 @@
                 this.toggleFullscreen();
                 return;
             }
+
+            // Handle help
+            if ( actionId === "help" ) {
+                this._showHelpLink();
+                return;
+            }
         };
 
         /**
@@ -207,6 +219,17 @@
                 // Clear the size
                 this.codemirror.setSize( null, "" );
             }
+        };
+
+        /**
+         * Show help link
+         */
+        Editor.prototype._showHelpLink = function() {
+
+            if ( !!this._options.helpLink ) {
+                window.open( this._options.helpLink );
+            }
+
         };
 
         return Editor;

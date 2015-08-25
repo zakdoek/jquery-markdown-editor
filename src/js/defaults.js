@@ -29,6 +29,8 @@
     })( window, function() {
 
         return {
+            helpLink: "http://nextstepwebs.github.io/" +
+                      "simplemde-markdown-editor/markdown-guide"
         };
     });
 
