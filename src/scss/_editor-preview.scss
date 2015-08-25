@@ -2,10 +2,21 @@
  * Specific editor preview style
  */
 
-.editor-preview {
-    font: {
-        family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
-        size: 14px;
+.jquery-markdown-editor {
+
+    .preview-container {
+
+        .content {
+
+            padding: 15px;
+
+            font: {
+                family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+                size: 14px;
+            }
+            line-height: 1.4;
+
+        }
+
     }
-    line-height: 1.4;
 }

@@ -96,12 +96,15 @@
 
                     // Register handler
                     $icon.click(function() {
-                        self._triggerListeners( value.name );
+                        if ( !value.isDisabled ) {
+                            self._triggerListeners( value.name );
+                        }
                     });
 
                     // Add to registry
                     value.$element = $icon;
                     value.isActive = false;
+                    value.isDisabled = false;
                     self._registry[ value.name ] = value;
 
                 } else {
@@ -208,6 +211,57 @@
 
             // Mark as not active
             data.isActive = false;
+        };
+
+        /**
+         * List button id's
+         */
+        Toolbar.prototype.listButtons = function() {
+            return $.map( this._registry, function( value, key ) {
+                return key;
+            });
+        };
+
+        /**
+         * Enable a button
+         */
+        Toolbar.prototype.enableButton = function( buttonId ) {
+
+            // Fetch data
+            var data = this._getData( buttonId );
+
+            // Short circuit
+            if ( !data.isDisabled ) {
+                return;
+            }
+
+            // Remove tag
+            data.$element.removeClass( "disabled" );
+
+            // Update state variable
+            data.isDisabled = false;
+
+        };
+
+        /**
+         * Disable a button
+         */
+        Toolbar.prototype.disableButton = function( buttonId ) {
+
+            // Fetch data
+            var data = this._getData( buttonId );
+
+            // Short circuit
+            if ( data.isDisabled ) {
+                return;
+            }
+
+            // Tag with a class
+            data.$element.addClass( "disabled" );
+
+            // Set state variable
+            data.isDisabled = true;
+
         };
 
         /**

@@ -29,6 +29,11 @@
                 color: $toolbar-active-color;
                 background-color: $toolbar-active-background;
             }
+
+            &.disabled {
+                color: $toolbar-disabled-color;
+                background-color: $toolbar-disabled-background;
+            }
         }
 
         i {
@@ -75,6 +80,26 @@
         left: 0;
         width: 100%;
         height: 100%;
+    }
+
+    /**
+     * Layout (not-style) the previewer
+     */
+    .preview-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2000;
+        overflow: auto;
+        display: none;
+        background-color: $preview-background;
+
+        &.active {
+            display: block;
+        }
+
     }
 
 }

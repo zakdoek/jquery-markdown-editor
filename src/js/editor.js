@@ -78,6 +78,10 @@
             // Set the initial fullscreen option
             this._isFullscreen = false;
 
+            // Set the initial preview variables
+            this._isPreview = false;
+            this._$previewContainer = false;
+
             // Just for docs, will be created and populated later
             this._$wrapper = false;
 
@@ -154,6 +158,9 @@
             // setup fullscreen
             this._initFullscreen();
 
+            // setup preview
+            this._initPreview();
+
         };
 
         /**
@@ -176,9 +183,32 @@
         };
 
         /**
+         * Init the preview functionality
+         */
+        Editor.prototype._initPreview = function() {
+            this._$previewContainer = $( "<div></div" );
+            this._$previewContainer.addClass( "preview-container" );
+
+            this._$previewContent = $( "<div></div>" );
+            this._$previewContent.addClass( "content" );
+            this._$previewContainer.append( this._$previewContent );
+
+            // Add it
+            $( this.codemirror.getWrapperElement() ).append(
+                this._$previewContainer );
+        };
+
+        /**
          * Process toolbar events
          */
         Editor.prototype._processActions = function( actionId ) {
+
+            // Handle preview
+            if( actionId === "preview" ) {
+                this.togglePreview();
+                return;
+            }
+
             // Handle fullscreen
             if ( actionId === "fullscreen" ) {
                 this.toggleFullscreen();
@@ -190,6 +220,23 @@
                 this._showHelpLink();
                 return;
             }
+
+            // Ignore below if preview mode is enabled
+            if ( this._isPreview ) {
+                // Exit
+                return;
+            }
+        };
+
+        /**
+         * Show help link
+         */
+        Editor.prototype._showHelpLink = function() {
+
+            if ( !!this._options.helpLink ) {
+                window.open( this._options.helpLink );
+            }
+
         };
 
         /**
@@ -222,12 +269,57 @@
         };
 
         /**
-         * Show help link
+         * Toggle the preview function
          */
-        Editor.prototype._showHelpLink = function() {
+        Editor.prototype.togglePreview = function() {
 
-            if ( !!this._options.helpLink ) {
-                window.open( this._options.helpLink );
+            var self = this;
+
+            // Switch state
+            this._isPreview = !this._isPreview;
+
+            if ( this._isPreview ) {
+                // Activate preview
+
+                // Disable buttons
+                // TODO: Find a more extensible sollution
+                var toDisable = $.grep(
+                    this._toolbar.listButtons(), function( value ) {
+                    return $.inArray( value, [
+                        "preview", "help", "fullscreen" ] ) === -1;
+                });
+
+                $.each( toDisable, function( idx, value ) {
+                    self._toolbar.disableButton( value );
+                });
+
+                // Activate preview button
+                this._toolbar.markActive( "preview" );
+
+                // Render the current value to the preview container
+                if ( !!this._options.renderer ) {
+                    this._$previewContent.html( this._options.renderer(
+                        this.codemirror.getValue() ) );
+                } else {
+                    this._$previewContent.text( "No renderer." );
+                }
+
+                // Set class
+                this._$previewContainer.addClass( "active" );
+
+            } else {
+                // Deactivate
+
+                // Enable all buttons
+                $.each( self._toolbar.listButtons(), function( idx, value ) {
+                    self._toolbar.enableButton( value );
+                });
+
+                // Deactivate preview button
+                this._toolbar.markNotActive( "preview" );
+
+                // Set class
+                this._$previewContainer.removeClass( "active" );
             }
 
         };
