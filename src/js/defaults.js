@@ -1,5 +1,5 @@
 /**
- * StatusBar defaults
+ * Editor defaults
  */
 
 (function() {
@@ -23,17 +23,12 @@
         } else {
             // browser global
             window.jqueryMarkdownEditor = window.jqueryMarkdownEditor || {};
-            window.jqueryMarkdownEditor.statusBar =
-                window.jqueryMarkdownEditor.statusBar || {};
-            window.jqueryMarkdownEditor.statusBar.defaults = factory();
+            window.jqueryMarkdownEditor.defaults = factory();
         }
 
     })( window, function() {
 
         return {
-            lineCount: true,
-            wordCount: true,
-            cursorPosition: true
         };
     });
 

@@ -22,8 +22,10 @@
             module.exports = factory();
         } else {
             // browser global
-            window.utils = window.utils || {};
-            window.utils.types = factory();
+            window.jqueryMarkdownEditor = window.jqueryMarkdownEditor || {};
+            window.jqueryMarkdownEditor.utils =
+                window.jqueryMarkdownEditor.utils || {};
+            window.jqueryMarkdownEditor.utils.types = factory();
         }
 
     })( window, function() {

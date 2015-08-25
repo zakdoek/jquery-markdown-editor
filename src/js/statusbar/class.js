@@ -30,11 +30,13 @@
             );
         } else {
             // browser global
-            window.statusBar = window.statusBar || {};
-            window.statusBar.StatusBar = factory(
+            window.jqueryMarkdownEditor = window.jqueryMarkdownEditor || {};
+            window.jqueryMarkdownEditor.statusBar =
+                window.jqueryMarkdownEditor.statusBar || {};
+            window.jqueryMarkdownEditor.statusBar.StatusBar = factory(
                 window.jQuery,
-                window.utils.types,
-                window.statusBar.defaults
+                window.jqueryMarkdownEditor.utils.types,
+                window.jqueryMarkdownEditor.statusBar.defaults
             );
         }
 

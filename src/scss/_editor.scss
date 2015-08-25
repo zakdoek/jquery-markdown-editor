@@ -69,6 +69,7 @@
      * Handle the fullscreen
      */
     &.fullscreen {
+        z-index: $fullscreen-z-index;
         position: fixed;
         top: 0;
         left: 0;

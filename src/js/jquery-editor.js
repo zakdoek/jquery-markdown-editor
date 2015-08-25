@@ -28,7 +28,7 @@
          );
      } else {
          // browser global
-         factory( window.jQuery, window.MarkdownEditor );
+         factory( window.jQuery, window.jqueryMarkdownEditor.Editor );
      }
 
     })( window, function( $, MarkdownEditor ) {

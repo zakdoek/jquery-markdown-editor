@@ -30,11 +30,13 @@
             );
         } else {
             // browser global
-            window.toolbar = window.toolbar || {};
-            window.toolbar.Toolbar = factory(
+            window.jqueryMarkdownEditor = window.jqueryMarkdownEditor || {};
+            window.jqueryMarkdownEditor.toolbar =
+                window.jqueryMarkdownEditor.toolbar || {};
+            window.jqueryMarkdownEditor.toolbar.Toolbar = factory(
                 window.jQuery,
-                window.utils.types,
-                window.toolbar.defaults
+                window.jqueryMarkdownEditor.utils.types,
+                window.jqueryMarkdownEditor.toolbar.defaults
             );
         }
 

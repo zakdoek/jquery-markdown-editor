@@ -22,7 +22,8 @@
          module.exports = factory();
      } else {
          // browser global
-         window.gears = factory();
+        window.jqueryMarkdownEditor = window.jqueryMarkdownEditor || {};
+        window.jqueryMarkdownEditor.gears = factory();
      }
 
     })( window, function() {

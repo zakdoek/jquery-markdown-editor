@@ -44,12 +44,14 @@
          );
      } else {
          // browser global
-         window.MarkdownEditor = factory( window.jQuery,
-                                          window.gears,
-                                          window.utils.types,
-                                          window.toolbar.Toolbar,
-                                          window.statusBar.StatusBar,
-                                          window.CodeMirror );
+        window.jqueryMarkdownEditor = window.jqueryMarkdownEditor || {};
+         window.jqueryMarkdownEditor.Editor = factory(
+             window.jQuery,
+             window.jqueryMarkdownEditor.gears,
+             window.jqueryMarkdownEditor.utils.types,
+             window.jqueryMarkdownEditor.toolbar.Toolbar,
+             window.jqueryMarkdownEditor.statusBar.StatusBar,
+             window.CodeMirror );
      }
 
     })( window, function( $, gears, types, Toolbar, StatusBar, CodeMirror ) {
