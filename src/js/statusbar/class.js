@@ -74,6 +74,7 @@
             // Create linecount if desired
             if ( this._options.lineCount ) {
                 $element = $( "<div>lines: </div>" );
+                $element.addClass( "status-block" );
                 this._$lineCount = $( "<span></span>" );
                 this._$lineCount.addClass( "line-count" );
                 this._$lineCount.text( "0" );
@@ -84,6 +85,7 @@
             // Create wordcount if desired
             if ( this._options.wordCount ) {
                 $element = $( "<div>words: </div>" );
+                $element.addClass( "status-block" );
                 this._$wordCount = $( "<span></span>" );
                 this._$wordCount.addClass( "word-count" );
                 this._$wordCount.text( "0" );
@@ -94,6 +96,7 @@
             // Create cursor position if desired
             if ( this._options.cursorPosition ) {
                 $element = $( "<div>:</div>" );
+                $element.addClass( "status-block" );
                 this._$cursorLine = $( "<span></span>" );
                 this._$cursorLine.addClass( "cursor-line" );
                 this._$cursorLine.text( "0" );

@@ -115,6 +115,9 @@
             if ( this._options.statusBar !== false ) {
                 this._statusBar = new StatusBar( this._$wrapper,
                                                  this._options.statusBar );
+                this._statusBar.setLineCount( 5 );
+                this._statusBar.setWordCount( 100 );
+                this._statusBar.setCursorPosition( 2, 5 );
             }
 
         };

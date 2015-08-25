@@ -4,6 +4,13 @@
 
 .jquery-markdown-editor {
 
+    // Set standard font
+    font: {
+        family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+        size: 14px;
+    }
+    line-height: 1.4;
+
     /**
      * Style the toolbar
      */
@@ -30,6 +37,22 @@
             color: $toolbar-separator-color;
             font-size: 18px;
             margin: 0 5px;
+        }
+
+    }
+
+    /**
+     * Style the statusbar
+     */
+    .status-bar {
+
+        text-align: right;
+        color: $status-bar-color;
+        font-size: 12px;
+
+        .status-block {
+            padding: 5px;
+            display: inline-block;
         }
 
     }
