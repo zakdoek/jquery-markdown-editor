@@ -143,6 +143,28 @@
                 });
             }
 
+            // setup fullscreen
+            this._initFullscreen();
+
+        };
+
+        /**
+         * Init fullscreen functionality
+         */
+        Editor.prototype._initFullscreen = function() {
+
+            var self = this;
+
+            // Set up resizing for fullscreen stuff
+            $( window ).resize(function() {
+                if ( self._isFullscreen ) {
+                    var targetHeight = $( window ).height();
+                    targetHeight -= self._toolbar.getHeight();
+                    targetHeight -= self._statusBar.getHeight();
+                    self.codemirror.setSize( null, targetHeight  );
+                }
+            });
+
         };
 
         /**
