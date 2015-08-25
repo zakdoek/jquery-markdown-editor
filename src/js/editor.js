@@ -67,6 +67,12 @@
                 return;
             }
 
+            // Set the initial fullscreen option
+            this._isFullscreen = false;
+
+            // Just for docs, will be created and populated later
+            this._$wrapper = false;
+
             // Store the element for reference
             this._element = this._options.element;
 
@@ -98,9 +104,10 @@
                 this._toolbar = new Toolbar( this._$wrapper,
                                              this._options.toolbar );
 
-                // Dummy active marking
-                this._toolbar.markActive( "bold" );
-                this._toolbar.markActive( "link" );
+                // Register listener
+                this._toolbar.addActionListener(function( buttonId ) {
+                    self._processActions( buttonId );
+                });
             }
 
             // Create the codemirror object
@@ -136,6 +143,46 @@
                 });
             }
 
+        };
+
+        /**
+         * Process toolbar events
+         */
+        Editor.prototype._processActions = function( actionId ) {
+            // Handle fullscreen
+            if ( actionId === "fullscreen" ) {
+                this.toggleFullscreen();
+                return;
+            }
+        };
+
+        /**
+         * Activate/Deactivate fullscreen
+         */
+        Editor.prototype.toggleFullscreen = function() {
+
+            // Change state
+            this._isFullscreen = !this._isFullscreen;
+
+            // Short circuit
+            if ( this._isFullscreen ) {
+                // Activate
+                this._$wrapper.addClass( "fullscreen" );
+                // Set toolbar
+                this._toolbar.markActive( "fullscreen" );
+                // Set editor to full size
+                var targetHeight = $( window ).height();
+                targetHeight -= this._toolbar.getHeight();
+                targetHeight -= this._statusBar.getHeight();
+                this.codemirror.setSize( null, targetHeight  );
+            } else {
+                // Deactivate
+                this._$wrapper.removeClass( "fullscreen" );
+                // Set toolbar
+                this._toolbar.markNotActive( "fullscreen" );
+                // Clear the size
+                this.codemirror.setSize( null, "" );
+            }
         };
 
         return Editor;

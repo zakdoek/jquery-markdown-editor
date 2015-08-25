@@ -208,6 +208,13 @@
             data.isActive = false;
         };
 
+        /**
+         * Toolbar height getter
+         */
+        Toolbar.prototype.getHeight = function() {
+            return this._$element.outerHeight();
+        };
+
         return Toolbar;
     });
 

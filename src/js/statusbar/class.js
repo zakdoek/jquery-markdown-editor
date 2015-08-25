@@ -144,6 +144,13 @@
 
         };
 
+        /**
+         * Height getter
+         */
+        StatusBar.prototype.getHeight = function() {
+            return this._$element.outerHeight();
+        };
+
         return StatusBar;
 
     });
