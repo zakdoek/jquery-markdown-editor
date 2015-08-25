@@ -2,8 +2,6 @@
  * Status bar defaults
  */
 
-// jquery, types, defaults
-
 (function() {
 
     "use strict";
@@ -51,7 +49,7 @@
             if ( types.isUndefined( options ) ) {
                 options = {};
             }
-            this._options = $.extend( defaults, options );
+            this._options = $.extend( {}, defaults, options );
 
             // Create element
             this._$element = $( "<div></div>" );

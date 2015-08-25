@@ -2,8 +2,6 @@
  * The toolbar object
  */
 
-// jquery, ../utils/types, ./defaults
-
 (function() {
 
     "use strict";
@@ -51,7 +49,8 @@
 
             // Normalize the options
             if ( types.isUndefined( definitions ) ) {
-                definitions = defaults;
+                // Clone defaults as definitions
+                definitions = $.extend( {}, defaults );
             }
 
             // Add the element
@@ -67,8 +66,8 @@
             // Action listeners register
             this._actionListeners = [];
 
-            // Append to parent
-            $parent.append( this._$element );
+            // Prepend to parent
+            $parent.prepend( this._$element );
         }
 
         /**
