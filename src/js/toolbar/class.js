@@ -214,6 +214,17 @@
         };
 
         /**
+         * Mark based on boolean
+         */
+        Toolbar.prototype.setActive = function( buttonId, bool ) {
+            if ( bool ) {
+                this.markActive( buttonId );
+            } else {
+                this.markNotActive( buttonId );
+            }
+        };
+
+        /**
          * List button id's
          */
         Toolbar.prototype.listButtons = function() {
