@@ -187,7 +187,7 @@
          */
         Editor.prototype._initPreview = function() {
             this._$previewContainer = $( "<div></div" );
-            this._$previewContainer.addClass( "preview-container" );
+            this._$previewContainer.addClass( "preview-container modal" );
 
             this._$previewContent = $( "<div></div>" );
             this._$previewContent.addClass( "content" );
