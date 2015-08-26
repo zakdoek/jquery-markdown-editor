@@ -100,11 +100,8 @@
          */
         Editor.prototype._init = function() {
 
-            var self = this,
-                keyMaps = {};
-
+            var keyMaps = {};
             // TODO: Add extra keymaps
-
             keyMaps.Enter = "newlineAndIndentContinueMarkdownList";
             keyMaps.Tab = "tabAndIndentContinueMarkdownList";
             keyMaps[ "Shift-Tab" ] = "shiftTabAndIndentContinueMarkdownList";
@@ -125,66 +122,11 @@
                 extraKeys: keyMaps
             });
 
-            // Append toolbar
-            if ( this._options.toolbar !== false ) {
-                // Add the toolbar
-                this._toolbar = new Toolbar( this._$wrapper,
-                                             this._options.toolbar );
+            // setup toolbar
+            this._initToolbar();
 
-                // Register listener
-                this._toolbar.addActionListener(function( buttonId ) {
-                    self._processActions( buttonId );
-                });
-
-                // Register button state updaters
-                this.codemirror.on( "cursorActivity", function() {
-
-                    var state = self._getSelectionState();
-
-                    // Bold button
-                    self._toolbar.setActive(
-                        "bold", $.inArray( "strong", state ) !== -1 );
-                    // Italics button
-                    self._toolbar.setActive(
-                        "italic", $.inArray( "em", state ) !== -1 );
-
-                    // Quote
-                    self._toolbar.setActive(
-                        "quote", $.inArray( "quote", state ) !== -1 );
-
-                    // Ordered list
-                    self._toolbar.setActive(
-                        "ol", $.inArray( "ol", state ) !== -1 );
-
-                    // Unordered list
-                    self._toolbar.setActive(
-                        "ul", $.inArray( "ul", state ) !== -1 );
-
-                    // TODO: Support all states
-
-                });
-            }
-
-            // Append statusbar
-            if ( this._options.statusBar !== false ) {
-                this._statusBar = new StatusBar( this._$wrapper,
-                                                 this._options.statusBar );
-
-                this.codemirror.on( "update", function() {
-                    // Update line count
-                    self._statusBar.setLineCount( self.codemirror.lineCount() );
-
-                    // Update word count
-                    self._statusBar.setWordCount(
-                        gears.wordCount( self.codemirror ) );
-                });
-
-                this.codemirror.on( "cursorActivity", function() {
-                    // Update cursor position
-                    var pos = self.codemirror.getCursor();
-                    self._statusBar.setCursorPosition( pos.line, pos.ch );
-                });
-            }
+            // setup status bar
+            this._initStatusBar();
 
             // setup fullscreen
             this._initFullscreen();
@@ -192,6 +134,86 @@
             // setup preview
             this._initPreview();
 
+        };
+
+        /**
+         * Init the toolbar
+         */
+        Editor.prototype._initToolbar = function() {
+
+            // short circuit
+            if ( this._options.toolbar === false ) {
+                return;
+            }
+
+            var self = this;
+
+            // Add the toolbar
+            this._toolbar = new Toolbar( this._$wrapper,
+                                         this._options.toolbar );
+
+            // Register listener
+            this._toolbar.addActionListener(function( buttonId ) {
+                self._processActions( buttonId );
+            });
+
+            // Register button state updaters
+            this.codemirror.on( "cursorActivity", function() {
+
+                var state = self._getSelectionState();
+
+                // Bold button
+                self._toolbar.setActive(
+                    "bold", $.inArray( "strong", state ) !== -1 );
+                // Italics button
+                self._toolbar.setActive(
+                    "italic", $.inArray( "em", state ) !== -1 );
+
+                // Quote
+                self._toolbar.setActive(
+                    "quote", $.inArray( "quote", state ) !== -1 );
+
+                // Ordered list
+                self._toolbar.setActive(
+                    "ol", $.inArray( "ol", state ) !== -1 );
+
+                // Unordered list
+                self._toolbar.setActive(
+                    "ul", $.inArray( "ul", state ) !== -1 );
+
+                // TODO: Support all states
+
+            });
+        };
+
+        /**
+         * Init status bar
+         */
+        Editor.prototype._initStatusBar = function() {
+            // Short circuit
+            if ( this._options.statusBar === false ) {
+                return;
+            }
+
+            var self = this;
+
+            this._statusBar = new StatusBar( this._$wrapper,
+                                             this._options.statusBar );
+
+            this.codemirror.on( "update", function() {
+                // Update line count
+                self._statusBar.setLineCount( self.codemirror.lineCount() );
+
+                // Update word count
+                self._statusBar.setWordCount(
+                    gears.wordCount( self.codemirror ) );
+            });
+
+            this.codemirror.on( "cursorActivity", function() {
+                // Update cursor position
+                var pos = self.codemirror.getCursor();
+                self._statusBar.setCursorPosition( pos.line, pos.ch );
+            });
         };
 
         /**
