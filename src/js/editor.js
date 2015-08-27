@@ -21,15 +21,16 @@
              "./utils/types",
              "./toolbar/class",
              "./statusbar/class",
+             "./language-helpers/bold",
              "CodeMirror/lib/codemirror",
              "CodeMirror/addon/edit/continuelist",
              "./tab-continuelist",
              "CodeMirror/mode/xml/xml",
              "CodeMirror/mode/markdown/markdown"
          ], function( $, gears, defaults, types, Toolbar, StatusBar,
-                      CodeMirror ) {
+                      lhBold, CodeMirror ) {
              return factory( $, gears, defaults, types, Toolbar, StatusBar,
-                             CodeMirror );
+                             lhBold, CodeMirror );
          });
      } else if ( typeof exports === "object" ) {
          // CommonJS
@@ -40,6 +41,7 @@
              require( "./utils/types" ),
              require( "./toolbar/class" ),
              require( "./statusbar/class" ),
+             require( "./language-helpers/bold" ),
              require( "CodeMirror/lib/codemirror" ),
              require( "CodeMirror/addon/edit/continuelist" ),
              require( "./tab-continuelist" ),
@@ -56,11 +58,12 @@
              window.jqueryMarkdownEditor.utils.types,
              window.jqueryMarkdownEditor.toolbar.Toolbar,
              window.jqueryMarkdownEditor.statusBar.StatusBar,
+             window.jqueryMarkdownEditor.languageHelpers.bold,
              window.CodeMirror );
      }
 
     })( window, function( $, gears, defaults, types, Toolbar, StatusBar,
-                          CodeMirror ) {
+                          lhBold, CodeMirror ) {
 
         // line starts with number test
         var LINE_STARTS_WITH_NUMBER = /^\s*\d+\.\s/;
@@ -160,28 +163,31 @@
             // Register button state updaters
             this.codemirror.on( "cursorActivity", function() {
 
-                var state = self._getSelectionState();
+                // Set bold state
+                self._toolbar.setActive( "bold", lhBold.test( self ) );
 
-                // Bold button
-                self._toolbar.setActive(
-                    "bold", $.inArray( "strong", state ) !== -1 );
-                // Italics button
-                self._toolbar.setActive(
-                    "italic", $.inArray( "em", state ) !== -1 );
+                // var state = self._getSelectionState();
 
-                // Quote
-                self._toolbar.setActive(
-                    "quote", $.inArray( "quote", state ) !== -1 );
+                // // Bold button
+                // self._toolbar.setActive(
+                //     "bold", $.inArray( "strong", state ) !== -1 );
+                // // Italics button
+                // self._toolbar.setActive(
+                //     "italic", $.inArray( "em", state ) !== -1 );
 
-                // Ordered list
-                self._toolbar.setActive(
-                    "ol", $.inArray( "ol", state ) !== -1 );
+                // // Quote
+                // self._toolbar.setActive(
+                //     "quote", $.inArray( "quote", state ) !== -1 );
 
-                // Unordered list
-                self._toolbar.setActive(
-                    "ul", $.inArray( "ul", state ) !== -1 );
+                // // Ordered list
+                // self._toolbar.setActive(
+                //     "ol", $.inArray( "ol", state ) !== -1 );
 
-                // TODO: Support all states
+                // // Unordered list
+                // self._toolbar.setActive(
+                //     "ul", $.inArray( "ul", state ) !== -1 );
+
+                // // TODO: Support all states
 
             });
         };
@@ -279,6 +285,81 @@
                 // Exit
                 return;
             }
+
+            // Bold
+            if ( actionId === "bold" ) {
+                this._toggleBold();
+                // Exit
+                return;
+            }
+        };
+
+        /**
+         * Toggle bold
+         *
+         * TODO: Seriously optimize
+         */
+        Editor.prototype._toggleBlock = function( type, openChars, closeChars) {
+
+            closeChars = types.isDefined( closeChars ) ? closeChars : openChars;
+
+            var cm = this.codemirror;
+
+            var text;
+            var start = openChars;
+            var end = closeChars;
+
+            var startPoint = cm.getCursor( "from" );
+            var endPoint = cm.getCursor( "to" );
+
+            // Test state
+            if ( $.inArray( type, this._getSelectionState() ) ) {
+
+                // Remove the block
+                text = cm.getLine(startPoint.line);
+
+                start = text.slice(0, startPoint.ch);
+                end = text.slice(startPoint.ch);
+                if( type === "bold" ) {
+                    start = start.replace(/(\*\*|__)(?![\s\S]*(\*\*|__))/, "");
+                    end = end.replace(/(\*\*|__)/, "");
+                } else if( type === "italic" ) {
+                    start = start.replace(/(\*|_)(?![\s\S]*(\*|_))/, "");
+                    end = end.replace(/(\*|_)/, "");
+                }
+                cm.replaceRange(start + end, {
+                    line: startPoint.line,
+                    ch: 0
+                }, {
+                    line: startPoint.line,
+                    ch: 99999999999999
+                });
+
+                if( type === "bold" ) {
+                    startPoint.ch -= 2;
+                    endPoint.ch -= 2;
+                } else if(type === "italic") {
+                    startPoint.ch -= 1;
+                    endPoint.ch -= 1;
+                }
+            } else {
+                // Add the block
+                text = cm.getSelection();
+                if( type === "bold" ) {
+                    text = text.split( "**" ).join( "" );
+                    text = text.split("__").join( "" );
+                } else if( type === "italic" ) {
+                    text = text.split("*").join( "" );
+                    text = text.split("_").join( "" );
+                }
+                cm.replaceSelection(start + text + end);
+
+                startPoint.ch += openChars.length;
+                endPoint.ch = startPoint.ch + text.length;
+            }
+
+            cm.setSelection(startPoint, endPoint);
+            cm.focus();
         };
 
         /**
