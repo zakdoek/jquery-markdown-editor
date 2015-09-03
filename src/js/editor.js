@@ -288,78 +288,13 @@
 
             // Bold
             if ( actionId === "bold" ) {
-                this._toggleBold();
+                lhBold.toggle( this );
+
+                // TODO: Change the button state (will maybe automatic)
+
                 // Exit
                 return;
             }
-        };
-
-        /**
-         * Toggle bold
-         *
-         * TODO: Seriously optimize
-         */
-        Editor.prototype._toggleBlock = function( type, openChars, closeChars) {
-
-            closeChars = types.isDefined( closeChars ) ? closeChars : openChars;
-
-            var cm = this.codemirror;
-
-            var text;
-            var start = openChars;
-            var end = closeChars;
-
-            var startPoint = cm.getCursor( "from" );
-            var endPoint = cm.getCursor( "to" );
-
-            // Test state
-            if ( $.inArray( type, this._getSelectionState() ) ) {
-
-                // Remove the block
-                text = cm.getLine(startPoint.line);
-
-                start = text.slice(0, startPoint.ch);
-                end = text.slice(startPoint.ch);
-                if( type === "bold" ) {
-                    start = start.replace(/(\*\*|__)(?![\s\S]*(\*\*|__))/, "");
-                    end = end.replace(/(\*\*|__)/, "");
-                } else if( type === "italic" ) {
-                    start = start.replace(/(\*|_)(?![\s\S]*(\*|_))/, "");
-                    end = end.replace(/(\*|_)/, "");
-                }
-                cm.replaceRange(start + end, {
-                    line: startPoint.line,
-                    ch: 0
-                }, {
-                    line: startPoint.line,
-                    ch: 99999999999999
-                });
-
-                if( type === "bold" ) {
-                    startPoint.ch -= 2;
-                    endPoint.ch -= 2;
-                } else if(type === "italic") {
-                    startPoint.ch -= 1;
-                    endPoint.ch -= 1;
-                }
-            } else {
-                // Add the block
-                text = cm.getSelection();
-                if( type === "bold" ) {
-                    text = text.split( "**" ).join( "" );
-                    text = text.split("__").join( "" );
-                } else if( type === "italic" ) {
-                    text = text.split("*").join( "" );
-                    text = text.split("_").join( "" );
-                }
-                cm.replaceSelection(start + text + end);
-
-                startPoint.ch += openChars.length;
-                endPoint.ch = startPoint.ch + text.length;
-            }
-
-            cm.setSelection(startPoint, endPoint);
-            cm.focus();
         };
 
         /**

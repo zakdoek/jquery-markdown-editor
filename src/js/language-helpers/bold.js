@@ -39,6 +39,65 @@
     })( window, function( types ) {
 
         /**
+         * Position comparator
+         *
+         * Returns true if position1 is greater than position2
+         */
+        function isGreaterThan( position1, position2, equal ) {
+            if ( position1.line > position2.line ) {
+                return true;
+            } else if ( position1.line === position2.line ) {
+                if ( position1.ch > position2.ch ||
+                     ( equal === true && position1.ch === position2.ch ) ) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /**
+         * Smaller equivalent
+         */
+        function isSmallerThan( position1, position2, equal ) {
+            return isGreaterThan( position2, position1, !equal );
+        }
+
+        /**
+         * Find position in array and get
+         *
+         * Should return the closest smaller position or false
+         *
+         * Find the closest larger position or false if larger is true
+         *
+         * Does consider equal as inclusive if true
+         *
+         * returns false if none can be found
+         */
+        function getClosestPosition( array, pos, larger, equal ) {
+            var i;
+            var selectedPosition = false;
+
+            for ( i = 0; i < array.length; i++ ) {
+                var item = array[ i ];
+
+                if ( larger ) {
+                    if ( isGreaterThan( pos, item, equal ) ) {
+                        selectedPosition = item;
+                        break;
+                    }
+                } else {
+                    if ( isSmallerThan( pos, item, equal ) ) {
+                        selectedPosition = item;
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            return selectedPosition;
+        }
+
+        /**
          * Get current block
          *
          * Add lines until empty line or undefined reached.
@@ -60,7 +119,11 @@
             var blockTokens = [];
 
             if ( !lineBuffer.length ) {
-                return false;
+                return {
+                    empty: true,
+                    multiple: false,
+                    tokens: null
+                };
             }
 
             // Seek block start
@@ -79,6 +142,7 @@
                 lineBuffer = cm.getLine( endLineNumber + 1 );
 
                 if ( types.isUndefined( lineBuffer ) || !lineBuffer.length ) {
+                    // End of block detected
                     break;
                 }
 
@@ -86,7 +150,11 @@
             }
 
             if ( endLineNumber < endPosition.line ) {
-                return false;
+                return {
+                    empty: false,
+                    multiple: true,
+                    tokens: null
+                };
             }
 
             // Fetch contents
@@ -99,7 +167,11 @@
                 currentLineNumber++;
             }
 
-            return blockTokens;
+            return {
+                empty: false,
+                multiple: false,
+                tokens: blockTokens
+            };
         }
 
         /**
@@ -108,8 +180,8 @@
         function getBoldTokens( editor ) {
             var blockTokens = getSelectedBlock( editor );
 
-            if ( !blockTokens || !blockTokens.length ) {
-                return;
+            if ( blockTokens.empty || blockTokens.multiple ) {
+                return false;
             }
 
             var boldTokens = [];
@@ -121,9 +193,9 @@
 
             var lineBuffer, i;
 
-            for( i = 0; i < blockTokens.length; i++ ) {
+            for( i = 0; i < blockTokens.tokens.length; i++ ) {
 
-                lineBuffer = blockTokens[ i ].content;
+                lineBuffer = blockTokens.tokens[ i ].content;
 
                 var eaten = 0;
                 var result = lineBuffer.match( boldRegex );
@@ -135,7 +207,7 @@
                     eaten += unpacked.length;
                     lineBuffer = lineBuffer.substring( unpacked.length );
                     boldTokens.push({
-                        line: blockTokens[ i ].line,
+                        line: blockTokens.tokens[ i ].line,
                         ch: eaten - 2,
                         symbol: symbol,
                         isOpen: parseState[ symbol ]
@@ -148,17 +220,50 @@
         }
 
         /**
-         * Test if the selection is contained within a bold inline element. If
-         * so, return true, else return false.
+         * Expand the selection or false if invalid
          */
-        function test( editor ) {
+        function selectionAnalyis( editor ) {
 
             // get tokens
             var boldTokens = getBoldTokens( editor );
 
-            if ( !boldTokens ) {
-                return false;
+            // Check soiled
+            // No block could be singled out for parsing
+            if ( boldTokens === false ) {
+                // Return soiled, empty block or multi block
+                return {
+                    isMatch: false,
+                    isClean: false,
+                    isOverlapping: false,
+                    isSoiled: true
+                };
             }
+
+            // Check no markings at all
+            // No inlines are defined inside the block
+            if ( !boldTokens.length ) {
+                return {
+                    isMatch: false,
+                    isClean: true,
+                    isOverlapping: false,
+                    isSoiled: false
+                };
+            }
+
+            // Check match
+            // StartPosition should be should be greater than token n of the
+            // same type and endposition should be smaller than token n+1 of
+            // the same type
+
+            // Check overlapping
+            // Start should be smaller than n of type and end should be
+            // greater than n+1 of type
+
+            // Check clean
+            // the immediate smaller of start should not be isOpen and the
+            // x+1 where x is the immediate smaller should be larger than end
+
+            // All from now should be marked soiled
 
             // get cursor
             var startPosition = editor.codemirror.getCursor( "from" );
@@ -167,6 +272,7 @@
             var i;
             var startToken = false;
             var endTokenIdx = false;
+            var endToken = false;
 
             // Scan if over
             for ( i = 0; i < boldTokens.length; i++ ) {
@@ -184,25 +290,54 @@
                 }
             }
 
+            // Test for a positive
             if ( startToken.isOpen && endTokenIdx < boldTokens.length ) {
-                var endToken = boldTokens[ endTokenIdx ];
+                endToken = boldTokens[ endTokenIdx ];
                 if ( endPosition.line < endToken.line ||
                      ( endPosition.line === endToken.line &&
                        endPosition.ch <= endToken.ch ) ) {
-                    return true;
+                    /* global console */
+                    console.log( "VALID" );
+                    return {
+                        isMatch: true,
+                        isClean: false,
+                        isOverlapping: false,
+                        isSoiled: false,
+                        start: startToken,
+                        end: endToken
+                    };
                 }
             }
 
-            // Catch all for now
+            /* global console */
+            console.log( "CLEAN OR SOILED",
+                         "TOKENS", startToken, endToken,
+                         "POSITIONS", startPosition, endPosition );
+            // Return clean
             return false;
+        }
+
+        /**
+         * Test if the selection is contained within a bold inline element. If
+         * so, return true, else return false.
+         */
+        function test( editor ) {
+            // TODO: Make more informative
+            // CanBold
+            // CanLink
+            // CanItalic
+            // CanImage
+            // TODO: Returns object with 3 arrays (active, normal, disabled)
+            return selectionAnalyis( editor ).isMatch;
         }
 
         /**
          * Toggle the state of the current selection. If test is true, unbold
          * the thing. Else, toggle the thing.
          */
-        function toggle() {
-            // Dummy
+        function toggle( editor ) {
+            /* global console */
+            console.log( editor );
         }
 
         return {
