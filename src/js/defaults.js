@@ -2,43 +2,21 @@
  * Editor defaults
  */
 
-(function() {
+import commonmark from "commonmark";
 
-    "use strict";
+// The default help link
+export const helpLink = "http://nextstepwebs.github.io/" +
+                        "simplemde-markdown-editor/markdown-guide";
 
-    ( function( window, factory ) {
+// Export the default renderer
+const reader = new commonmark.Parser();
+const writer = new commonmark.HtmlRenderer();
+export const renderer = function( src ) {
+    return writer.render( reader.parse( src ) );
+};
 
-        // universal module definition
+// Enable the toolbar by default
+export const toolbar = true;
 
-        /*global define: false, module: false */
-
-        if ( typeof define === "function" && define.amd ) {
-            // AMD
-            define( [
-                "marked/lib/marked"
-            ], function( marked ) {
-                return factory( marked );
-            });
-        } else if ( typeof exports === "object" ) {
-            // CommonJS
-            module.exports = factory(
-                require( "marked/lib/marked" )
-            );
-        } else {
-            // browser global
-            window.jqueryMarkdownEditor = window.jqueryMarkdownEditor || {};
-            window.jqueryMarkdownEditor.defaults = factory(
-                window.marked
-            );
-        }
-
-    })( window, function( marked ) {
-
-        return {
-            helpLink: "http://nextstepwebs.github.io/" +
-                      "simplemde-markdown-editor/markdown-guide",
-            renderer: marked
-        };
-    });
-
-})();
+// Statusbar activated by default
+export const statusBar = true;

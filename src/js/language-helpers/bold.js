@@ -43,24 +43,24 @@
          *
          * Returns true if position1 is greater than position2
          */
-        function isGreaterThan( position1, position2, equal ) {
-            if ( position1.line > position2.line ) {
-                return true;
-            } else if ( position1.line === position2.line ) {
-                if ( position1.ch > position2.ch ||
-                     ( equal === true && position1.ch === position2.ch ) ) {
-                    return true;
-                }
-            }
-            return false;
-        }
+        // function isGreaterThan( position1, position2, equal ) {
+        //     if ( position1.line > position2.line ) {
+        //         return true;
+        //     } else if ( position1.line === position2.line ) {
+        //         if ( position1.ch > position2.ch ||
+        //              ( equal === true && position1.ch === position2.ch ) ) {
+        //             return true;
+        //         }
+        //     }
+        //     return false;
+        // }
 
         /**
          * Smaller equivalent
          */
-        function isSmallerThan( position1, position2, equal ) {
-            return isGreaterThan( position2, position1, !equal );
-        }
+        // function isSmallerThan( position1, position2, equal ) {
+        //     return isGreaterThan( position2, position1, !equal );
+        // }
 
         /**
          * Find position in array and get
@@ -73,29 +73,29 @@
          *
          * returns false if none can be found
          */
-        function getClosestPosition( array, pos, larger, equal ) {
-            var i;
-            var selectedPosition = false;
+        // function getClosestPosition( array, pos, larger, equal ) {
+        //     var i;
+        //     var selectedPosition = false;
 
-            for ( i = 0; i < array.length; i++ ) {
-                var item = array[ i ];
+        //     for ( i = 0; i < array.length; i++ ) {
+        //         var item = array[ i ];
 
-                if ( larger ) {
-                    if ( isGreaterThan( pos, item, equal ) ) {
-                        selectedPosition = item;
-                        break;
-                    }
-                } else {
-                    if ( isSmallerThan( pos, item, equal ) ) {
-                        selectedPosition = item;
-                    } else {
-                        break;
-                    }
-                }
-            }
+        //         if ( larger ) {
+        //             if ( isGreaterThan( pos, item, equal ) ) {
+        //                 selectedPosition = item;
+        //                 break;
+        //             }
+        //         } else {
+        //             if ( isSmallerThan( pos, item, equal ) ) {
+        //                 selectedPosition = item;
+        //             } else {
+        //                 break;
+        //             }
+        //         }
+        //     }
 
-            return selectedPosition;
-        }
+        //     return selectedPosition;
+        // }
 
         /**
          * Get current block

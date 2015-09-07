@@ -1,56 +1,27 @@
 /**
  * Editor main file
+ *
+ * jQuery plugin
  */
 
-(function() {
+import $ from "jquery";
+import Editor from "./editor.js";
 
-    "use strict";
+$.fn.markdownEditor = function( options ) {
 
-    ( function( window, factory ) {
+    if ( !$.isPlainObject( options ) ) {
+        options = {};
+    }
 
-        // universal module definition
+    this.each(function() {
 
-         /*global define: false, module: false, require: false */
+        let $this = $( this );
 
-     if ( typeof define === "function" && define.amd ) {
-         // AMD
-         define( [
-             "jquery",
-             "./editor"
-         ], function( $, MarkdownEditor ) {
-             return factory( $, MarkdownEditor );
-         });
-     } else if ( typeof exports === "object" ) {
-         // CommonJS
-         module.exports = factory(
-             require( "jquery" ),
-             require( "./editor" )
-         );
-     } else {
-         // browser global
-         factory( window.jQuery, window.jqueryMarkdownEditor.Editor );
-     }
-
-    })( window, function( $, MarkdownEditor ) {
-
-        $.fn.markdownEditor = function( options ) {
-
-            if ( typeof options !== "object" ) {
-                options = {};
-            }
-
-            this.each(function() {
-
-                options.element = this;
-
-                $( this ).data( "markdown-editor-obj",
-                           new MarkdownEditor( options ) );
-
-            });
-
-            return this;
-        };
+        // Store this on the element
+        $this.data( "__jquery-markdown-editor",
+                    new Editor( $this, options ) );
 
     });
 
-})();
+    return this;
+};

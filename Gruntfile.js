@@ -28,21 +28,17 @@ module.exports = function( grunt ) {
       prepare: {
         files: [
           {
-            src: "bower_components/CodeMirror/lib/codemirror.css",
+            src: "node_modules/codemirror/lib/codemirror.css",
             dest: ".cache/scss/_codemirror.scss"
           },
           {
-            src: "bower_components/CodeMirror/theme/base16-light.css",
+            src: "node_modules/codemirror/theme/base16-light.css",
             dest: ".cache/scss/_codemirror-theme.scss"
           }
         ],
       },
-      bower: {
+      distribution: {
         files: [
-          {
-            src: "bower.json",
-            dest: "dist/bower.json"
-          },
           {
             expand: true,
             cwd: "src/scss",
@@ -89,7 +85,7 @@ module.exports = function( grunt ) {
         relativeAssets: true,
         importPath: [
           ".cache/scss",
-          "bower_components"
+          "node_modules"
         ],
         cssDir: "dist",
         fontsDir: "dist/fonts"
@@ -123,55 +119,20 @@ module.exports = function( grunt ) {
       }
     },
 
-    // Requirejs
-    requirejs: {
-      options: {
-        baseUrl: "bower_components",
-        name: "jquery-markdown-editor/jquery-editor",
-        paths: {
-          "jquery-markdown-editor": "../src/js",
-
-          // Exclude from source compilation
-          "jquery": "empty:",
-          "CodeMirror": "empty:",
-          "marked": "empty:"
-        }
-      },
-
-      development: {
-        options: {
-          optimize: "none",
-          out: "dist/jquery-markdown-editor.js"
-        }
-      },
-
+    // browserify
+    browserify: {
       build: {
-        options: {
-          optimize: "uglify2",
-          out: "dist/jquery-markdown-editor.min.js"
-        }
+        files: [
+          {
+            src: "src/js/jquery-editor.js",
+            dest: "dist/jquery-editor.js"
+          }
+        ]
       }
-    },
-
-    // Release to bower
-    "gh-pages": {
-      bower: {
-        base: "build",
-        branch: "master",
-        message: "Release v<%= pkg.version %>",
-        repo: "https://github.com/zakdoek/jquery-markdown-editor-bower",
-        tag: "<%= pkg.version %>"
-      },
-      src: "**/*"
     },
 
     // Watch
     watch: {
-      bowerFile: {
-        files: "bower.json",
-        tasks: [ "copy:prepare", "copy:bower" ]
-      },
-
       fontello: {
         files: [
           "src/fontello/config.json",
@@ -190,12 +151,12 @@ module.exports = function( grunt ) {
 
       gruntfile: {
         files: "Gruntfile.js",
-        tasks: [ "jshint:gruntfile" ]
+        tasks: [ "development" ]
       },
 
-      requirejs: {
+      browserify: {
         files: "src/js/**/*.js",
-        tasks: [ "jshint:build", "requirejs:development" ]
+        tasks: [ "jshint:build", "browserify:build" ]
       }
 
     }
@@ -203,30 +164,31 @@ module.exports = function( grunt ) {
   });
 
   // Tasks
+
+  // Development task
   grunt.registerTask( "development", [
     "jshint",
     "clean",
     "copy:prepare",
     "fontello",
     "compass:development",
-    "requirejs:development",
-    "copy:bower",
+    "copy:distribution",
+    "browserify:build",
     "watch"
   ] );
+
+  // Build task
   grunt.registerTask( "build", [
     "jshint",
     "clean",
     "copy:prepare",
     "fontello",
     "compass:build",
-    "requirejs:development",
-    "requirejs:build",
-    "copy:bower"
+    "copy:distribution",
+    "browserify:build"
   ] );
-  grunt.registerTask( "release", [
-    "build",
-    "gh-pages:bower"
-  ] );
+
+  // Default task
   grunt.registerTask( "default", [ "build" ] );
 
 };
