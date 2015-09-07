@@ -30,9 +30,9 @@ export default class UpdatingButton extends Button {
     /**
      * Update the button, based on a selection object
      */
-    update( selectionState ) {
-        /* global console */
-        console.log( selectionState );
+    update( selectionState ) { /* jshint unused: false */
+        throw new Error( "No override could be found on the update method " +
+                         "of this button." );
     }
 
 }

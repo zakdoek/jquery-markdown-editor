@@ -26,4 +26,12 @@ export default class QuoteButton extends UpdatingButton {
 
     }
 
+    /**
+     * Update override
+     */
+    update( selectionState ) {
+        /* global console */
+        console.log( "Update Quote Button", selectionState );
+    }
+
 }

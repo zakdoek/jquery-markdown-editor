@@ -21,16 +21,16 @@ export default class EventSpawner {
             this._listeners[ event ] = [];
         }
 
-        this._listeners[ event ].push( callback.bind( this ) );
+        this._listeners[ event ].push( callback );
     }
 
     /**
      * The trigger method
      */
-    trigger( event ) {
+    trigger( event, ...args ) {
         if( event in this._listeners ) {
             for ( let callback of this._listeners[ event ] ) {
-                callback();
+                callback.apply( this, args );
             }
         }
     }

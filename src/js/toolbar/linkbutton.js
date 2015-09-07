@@ -27,4 +27,12 @@ export default class LinkButton extends UpdatingButton {
 
     }
 
+    /**
+     * Update override
+     */
+    update( selectionState ) {
+        /* global console */
+        console.log( "Update link Button", selectionState );
+    }
+
 }

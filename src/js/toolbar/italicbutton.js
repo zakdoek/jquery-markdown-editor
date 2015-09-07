@@ -23,4 +23,12 @@ export default class ItalicButton extends UpdatingButton {
         super( toolbar, OPTIONS );
     }
 
+    /**
+     * Update override
+     */
+    update( selectionState ) {
+        /* global console */
+        console.log( "Update Italic Button", selectionState );
+    }
+
 }
