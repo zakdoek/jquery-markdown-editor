@@ -68,8 +68,6 @@ export default class Editor extends EventSpawner {
         // Set standard keymaps
         let keyMaps = {};
         keyMaps.Enter = "newlineAndIndentContinueMarkdownList";
-        keyMaps.Tab = "tabAndIndentContinueMarkdownList";
-        keyMaps[ "Shift-Tab" ] = "shiftTabAndIndentContinueMarkdownList";
 
         // Wrap the element
         this.$wrapper = this._$element.wrap( "<div></div>" ).parent();
