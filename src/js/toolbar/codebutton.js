@@ -29,8 +29,8 @@ export default class CodeButton extends UpdatingButton {
      * Update override
      */
     update( selectionState ) {
-        /* global console */
-        console.log( "Update Code Button", selectionState );
+        this.disable( !selectionState.canCode );
+        this.activate( selectionState.isCode );
     }
 
 }

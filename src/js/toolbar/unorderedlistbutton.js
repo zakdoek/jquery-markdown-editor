@@ -29,8 +29,8 @@ export default class UnorderedListButton extends UpdatingButton {
      * Update override
      */
     update( selectionState ) {
-        /* global console */
-        console.log( "Update ul Button", selectionState );
+        this.disable( !selectionState.canUl );
+        this.activate( selectionState.isUl );
     }
 
 }

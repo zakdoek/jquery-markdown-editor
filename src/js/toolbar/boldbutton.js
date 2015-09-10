@@ -29,8 +29,10 @@ export default class BoldButton extends UpdatingButton {
      * Update override
      */
     update( selectionState ) {
-        /* global console */
-        console.log( "Update Bold Button", selectionState );
+
+        this.disable( !selectionState.canStrong );
+        this.activate( selectionState.isStrong );
+
     }
 
 }

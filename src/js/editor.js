@@ -14,6 +14,7 @@ import EventSpawner from "./utils/eventspawner.js";
 import * as defaults from "./defaults.js";
 import Toolbar from "./toolbar.js";
 import StatusBar from "./statusbar.js";
+import ToggleParser from "./toggleparser.js";
 
 
 /**
@@ -85,7 +86,12 @@ export default class Editor extends EventSpawner {
             extraKeys: keyMaps
         });
 
-        // TODO: Register cursoractivity trigger through toggleparser
+        // Add toggleparser. Should be based on the same parser as the renderer
+        if ( !this._options.toggleParserClass ) {
+            this.toggleParser = new ToggleParser( this );
+        } else {
+            this.toggleParser = new this._options.toggleParserClass( this );
+        }
 
         // setup toolbar
         if ( !!this._options.toolbar ) {
@@ -120,6 +126,16 @@ export default class Editor extends EventSpawner {
         $( this.codemirror.getWrapperElement() ).append(
             this._$previewContainer );
 
+        // Update the selection state
+        this.toggleParser.updateSelectionState();
+
+    }
+
+    /**
+     * Value getter
+     */
+    get value() {
+        return this.codemirror.getValue();
     }
 
     /**

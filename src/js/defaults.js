@@ -15,6 +15,8 @@ export const renderer = function( src ) {
     return writer.render( reader.parse( src ) );
 };
 
+export const toggleParserClass = false;
+
 // Enable the toolbar by default
 export const toolbar = true;
 

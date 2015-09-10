@@ -29,8 +29,8 @@ export default class OrderedListButton extends UpdatingButton {
      * Update override
      */
     update( selectionState ) {
-        /* global console */
-        console.log( "Update ol Button", selectionState );
+        this.disable( !selectionState.canOl );
+        this.activate( selectionState.isOl );
     }
 
 }

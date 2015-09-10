@@ -73,11 +73,22 @@ export default class Button extends EventSpawner {
 
         // Try to register disabling for preview msg
         if ( this._options.disabledInPreview ) {
+            this._prePreviewState = null;
             this.toolbar.editor.on( "preview", function() {
+                // Store pre preview state
+                if ( self._prePreviewState === null ) {
+                    self._prePreviewState = self._isDisabled;
+                }
                 self.disable( true );
             });
             this.toolbar.editor.on( "previewExit", function() {
-                self.disable( false );
+                // Restore pre preview state
+                if ( self._prePreviewState !== null ) {
+                    self.disable( self._prePreviewState );
+                    self._prePreviewState = null;
+                } else {
+                    self.disable( false );
+                }
             });
         }
 

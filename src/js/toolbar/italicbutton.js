@@ -27,8 +27,8 @@ export default class ItalicButton extends UpdatingButton {
      * Update override
      */
     update( selectionState ) {
-        /* global console */
-        console.log( "Update Italic Button", selectionState );
+        this.disable( !selectionState.canEm );
+        this.activate( selectionState.isEm );
     }
 
 }

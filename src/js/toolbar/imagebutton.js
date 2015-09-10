@@ -30,8 +30,8 @@ export default class ImageButton extends UpdatingButton {
      * Update override
      */
     update( selectionState ) {
-        /* global console */
-        console.log( "Update image Button", selectionState );
+        this.disable( !selectionState.canImage );
+        this.activate( selectionState.isImage );
     }
 
 }
