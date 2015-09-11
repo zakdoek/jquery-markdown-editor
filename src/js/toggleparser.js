@@ -46,6 +46,13 @@ export default class ToggleParser {
 
         this._parser = new Parser();
 
+        this._astTreeBuffer = null;
+
+        // Add listener for value update
+        this.editor.codemirror.on( "update", function() {
+            self._astTreeBuffer = null;
+        });
+
         // Add listener for selection state update
         this.editor.codemirror.on( "cursorActivity", function() {
             self.updateSelectionState();
@@ -126,7 +133,10 @@ export default class ToggleParser {
      * Get the ast tree
      */
     get _astTree() {
-        return this._parser.parse( this.editor.value );
+        if ( this._astTreeBuffer === null ) {
+            this._astTreeBuffer = this._parser.parse( this.editor.value );
+        }
+        return this._astTreeBuffer;
     }
 
     /**
@@ -171,8 +181,10 @@ export default class ToggleParser {
 
         let state = Object.assign( {}, defaultSelectionState );
 
+        let selection = this._selectionContainer;
+
         /* global console */
-        console.log( this._selectionContainer );
+        console.log( selection.type, ToggleParser._getSourcePos( selection ) );
 
         return state;
     }
@@ -236,13 +248,16 @@ export default class ToggleParser {
         if ( node.isContainer ) {
 
             let addChars = 0;
-            if ( node.type === "Strong" || node.type === "Link" ||
-                 node.type === "Image" ) {
+            if ( node.type === "Strong" ) {
                 addChars = 2;
             } else if ( node.type === "Emph" ) {
                 addChars = 1;
             } else if ( node.type === "Code" ) {
                 addChars = 3;
+            } else if ( node.type === "Link" ) {
+                currentChar += 1;
+            } else if ( node.type === "Image" ) {
+                currentChar += 2;
             }
 
             currentChar += addChars;
@@ -253,29 +268,27 @@ export default class ToggleParser {
                 ToggleParser._innerPopulateSourcePos( child, currentLine,
                                                       currentChar );
                 currentLine = child._extraSourcepos[ 1 ][ 0 ];
-                currentChar = child._extraSourcepos[ 1 ][ 1 ];
+                // + 2 is compensation for return - 2
+                currentChar = child._extraSourcepos[ 1 ][ 1 ] + 1;
                 child = child.next;
             }
 
-            if ( node.type === "Link" ) {
-                // Plus 4 is from the []()
+            if ( node.type === "Link" || node.type === "Image" ) {
+                // Plus closing char and link chars
                 currentChar += node.destination.length + 3;
-            } else if ( node.type === "Image" ) {
-                // Plus 5 from syntax
-                currentChar += node.destination.length + 4;
             }
 
             currentChar += addChars;
         } else if ( node.type === "Softbreak" || node.type === "Hardbreak" ) {
             currentLine += 1;
-            currentChar = 0;
+            currentChar = 1;
         } else {
             currentChar += node.literal.length;
         }
 
         node._extraSourcepos = [
             [ startCurrentLine, startCurrentChar ],
-            [ currentLine, currentChar ]
+            [ currentLine, currentChar - 1 ]
         ];
     }
 
