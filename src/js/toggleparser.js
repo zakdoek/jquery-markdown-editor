@@ -217,7 +217,7 @@ export default class ToggleParser {
         }
 
         // Detect multiblock selection
-        if ( selection.type === "Document" || selection.type === "List" ) {
+        if ( !ToggleParser._isHighestLevelBlock( selection ) ) {
             state.canStrong = false;
             return;
         }
@@ -249,7 +249,7 @@ export default class ToggleParser {
         }
 
         // Detect multiblock selection
-        if ( selection.type === "Document" || selection.type === "List" ) {
+        if ( !ToggleParser._isHighestLevelBlock( selection ) ) {
             state.canEm = false;
             return;
         }
@@ -485,6 +485,24 @@ export default class ToggleParser {
         // Nothing found
         return false;
 
+    }
+
+    /**
+     * Test if is highest level block
+     */
+    static _isHighestLevelBlock( node ) {
+        // Test if children are blocktype nodes
+        let child = node.firstChild;
+
+        while( child !== null ) {
+            if ( !INLINES.has( child.type ) ) {
+                return false;
+            }
+
+            child = child.next;
+        }
+
+        return true;
     }
 
 }
