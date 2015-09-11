@@ -21,6 +21,10 @@ export default class ItalicButton extends UpdatingButton {
      */
     constructor( toolbar ) {
         super( toolbar, OPTIONS );
+
+        this.on( "click", function() {
+            this.toolbar.editor.toggleParser.toggleEm();
+        });
     }
 
     /**

@@ -89,6 +89,93 @@ export default class ToggleParser {
     }
 
     /**
+     * Toggle bold
+     */
+    toggleStrong() {
+        let state = this._selectionState;
+        if ( !state.canStrong ) {
+            return;
+        }
+
+        if ( state.isStrong ) {
+            // Set off
+            let strongNode = ToggleParser._getHighestLevelNodeOfType(
+                this._selectionContainer, "Strong" );
+            let strongPos = ToggleParser._getSourcePos( strongNode );
+            let strongPosEnd = {
+                start: {
+                    line: strongPos.start.line,
+                    ch: strongPos.start.ch + 2
+                },
+                end: {
+                    line: strongPos.end.line,
+                    ch: strongPos.end.ch - 4
+                }
+            };
+
+            strongPos.end.ch -= 2;
+
+            this.editor.codemirror.replaceRange( "", strongPos.start,
+                                                 strongPosEnd.start );
+            this.editor.codemirror.replaceRange( "", strongPosEnd.end,
+                                                 strongPos.end );
+        } else {
+            // Set on
+            let selection = this._currentSelection;
+            this.editor.codemirror.replaceRange( "**", selection.end );
+            this.editor.codemirror.replaceRange( "**", selection.start );
+        }
+
+        this._astTreeBuffer = null;
+        this._selectionStateBuffer = null;
+        this._containingSelectionBuffer = null;
+        this.updateSelectionState();
+    }
+
+    /**
+     * Toggle em
+     */
+    toggleEm() {
+        let state = this._selectionState;
+        if ( !state.canEm ) {
+            return;
+        }
+
+        if ( state.isEm ) {
+            // Set off
+            let emNode = ToggleParser._getHighestLevelNodeOfType(
+                this._selectionContainer, "Emph" );
+            let emPos = ToggleParser._getSourcePos( emNode );
+            let emPosEnd = {
+                start: {
+                    line: emPos.start.line,
+                    ch: emPos.start.ch + 1
+                },
+                end: {
+                    line: emPos.end.line,
+                    ch: emPos.end.ch - 2
+                }
+            };
+
+            emPos.end.ch -= 1;
+
+            this.editor.codemirror.replaceRange( "", emPos.start,
+                                                 emPosEnd.start );
+            this.editor.codemirror.replaceRange( "", emPosEnd.end, emPos.end );
+        } else {
+            // Set on
+            let selection = this._currentSelection;
+            this.editor.codemirror.replaceRange( "_", selection.end );
+            this.editor.codemirror.replaceRange( "_", selection.start );
+        }
+
+        this._astTreeBuffer = null;
+        this._selectionStateBuffer = null;
+        this._containingSelectionBuffer = null;
+        this.updateSelectionState();
+    }
+
+    /**
      * Try to zoom a level
      *
      * Returns child node if zoom was succesfull, false otherwise.
@@ -323,9 +410,6 @@ export default class ToggleParser {
             this._pitchEmph( state, selection );
             this._pitchQuote( state, selection );
 
-            /* global console */
-            console.log( "SELECTION", selection );
-
             this._selectionStateBuffer = state;
         }
 
@@ -547,6 +631,22 @@ export default class ToggleParser {
         }
 
         return true;
+    }
+
+    /**
+     * Fetch the first occurence of a type node
+     */
+    static _getHighestLevelNodeOfType( node, type ) {
+
+        while( node !== null ) {
+            if ( node.type === type ) {
+                return node;
+            }
+
+            node = node.parent;
+        }
+
+        return false;
     }
 
 }
