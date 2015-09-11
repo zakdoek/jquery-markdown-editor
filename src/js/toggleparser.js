@@ -216,6 +216,12 @@ export default class ToggleParser {
             return;
         }
 
+        // Shortcircuit on invalid blocks
+        if ( selection.type === "Image" || selection.type === "Link" ) {
+            state.canStrong = false;
+            return;
+        }
+
         // Detect multiblock selection
         if ( !ToggleParser._isHighestLevelBlock( selection ) ) {
             state.canStrong = false;
@@ -248,6 +254,12 @@ export default class ToggleParser {
             return;
         }
 
+        // Shortcircuit on invalid blocks
+        if ( selection.type === "Image" || selection.type === "Link" ) {
+            state.canEm = false;
+            return;
+        }
+
         // Detect multiblock selection
         if ( !ToggleParser._isHighestLevelBlock( selection ) ) {
             state.canEm = false;
@@ -268,6 +280,34 @@ export default class ToggleParser {
     }
 
     /**
+     * Pitch quote
+     */
+    _pitchQuote( state, selection ) {
+
+        // Try to bubble to the quote
+        state.isQuote = ToggleParser._isOfTypeOrAncestors(
+            selection, "BlockQuote", false );
+
+        // If of type quote, one can unquote
+        if ( state.isQuote ) {
+            state.canQuote = true;
+            return;
+        }
+
+        // Detect where a quote can be inserted
+        if ( ToggleParser._isOfTypeOrAncestors(
+                selection, "Paragraph", false ) ) {
+
+            if ( !ToggleParser._isOfTypeOrAncestors(
+                    selection, "List", false ) ) {
+                state.canQuote = true;
+                return;
+            }
+        }
+
+    }
+
+    /**
      * Fetch a selection state object
      */
     get _selectionState() {
@@ -281,6 +321,10 @@ export default class ToggleParser {
             // Pitch posibilities
             this._pitchStrong( state, selection );
             this._pitchEmph( state, selection );
+            this._pitchQuote( state, selection );
+
+            /* global console */
+            console.log( "SELECTION", selection );
 
             this._selectionStateBuffer = state;
         }
