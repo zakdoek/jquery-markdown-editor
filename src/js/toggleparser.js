@@ -4,6 +4,19 @@
 
 import { Parser } from "commonmark";
 
+// Inline list
+const INLINES = new Set([
+    "Text",
+    "Softbreak",
+    "Hardbreak",
+    "Emph",
+    "Strong",
+    "Html",
+    "Link",
+    "Image",
+    "Code"
+]);
+
 // State prototype
 const defaultSelectionState = {
 
@@ -47,14 +60,22 @@ export default class ToggleParser {
         this._parser = new Parser();
 
         this._astTreeBuffer = null;
+        this._selectionStateBuffer = null;
+        this._containingSelectionBuffer = null;
 
         // Add listener for value update
         this.editor.codemirror.on( "update", function() {
+            // Invalidate ast tree
             self._astTreeBuffer = null;
         });
 
         // Add listener for selection state update
         this.editor.codemirror.on( "cursorActivity", function() {
+            // Selection changed, invalidate states
+            self._selectionStateBuffer = null;
+            self._containingSelectionBuffer = null;
+
+            // Update
             self.updateSelectionState();
         });
 
@@ -156,22 +177,94 @@ export default class ToggleParser {
      * Get the containing node of a current selection
      */
     get _selectionContainer() {
-        let selection = this._currentSelection;
-        let node = this._astTree;
-        let attempt = this._tryLevelZoom( node, selection );
 
-        while( attempt ) {
+        if ( this._containingSelectionBuffer === null ) {
 
-            // Attempt is true, so set to node
-            node = attempt;
+            let selection = this._currentSelection;
+            let node = this._astTree;
+            let attempt = this._tryLevelZoom( node, selection );
 
-            // New attempt
-            attempt = this._tryLevelZoom( node, selection );
+            while( attempt ) {
+
+                // Attempt is true, so set to node
+                node = attempt;
+
+                // New attempt
+                attempt = this._tryLevelZoom( node, selection );
+
+            }
+
+            // Set last succesful zoom on node
+            this._containingSelectionBuffer = node;
 
         }
 
-        // Return last succesful zoom on node
-        return node;
+        return this._containingSelectionBuffer;
+    }
+
+    /**
+     * Pitch for bold
+     */
+    _pitchStrong( state, selection ) {
+        state.isStrong = ToggleParser._isOfTypeOrAncestors( selection,
+                                                            "Strong", true );
+
+        // If self or ancestor is strong, can unstrong toggle, so permit true.
+        if ( state.isStrong ) {
+            state.canStrong = true;
+            // Early exit
+            return;
+        }
+
+        // Detect multiblock selection
+        if ( selection.type === "Document" || selection.type === "List" ) {
+            state.canStrong = false;
+            return;
+        }
+
+        // An empty selection has no use here
+        if ( this._selectionIsEmpty() ) {
+            state.canStrong = true;
+            // Early exit
+            return;
+        }
+
+        // Test if the selection contains a strong
+        if ( !this._selectionContainsTokenOfType( selection, "Strong" ) ) {
+            state.canStrong = true;
+        }
+    }
+
+    /**
+     * Pitch for italic
+     */
+    _pitchEmph( state, selection ) {
+        state.isEm = ToggleParser._isOfTypeOrAncestors( selection, "Emph",
+                                                        true );
+        // If self or ancestor is emph, can unemph toggle, so permit true.
+        if ( state.isEm ) {
+            state.canEm = true;
+            // Early exit
+            return;
+        }
+
+        // Detect multiblock selection
+        if ( selection.type === "Document" || selection.type === "List" ) {
+            state.canEm = false;
+            return;
+        }
+
+        // An empty selection has no use here
+        if ( this._selectionIsEmpty() ) {
+            state.canEm = true;
+            // Early exit
+            return;
+        }
+
+        // Test if the selection contains an emph
+        if ( !this._selectionContainsTokenOfType( selection, "Emph" ) ) {
+            state.canEm = true;
+        }
     }
 
     /**
@@ -179,14 +272,73 @@ export default class ToggleParser {
      */
     get _selectionState() {
 
-        let state = Object.assign( {}, defaultSelectionState );
+        if ( this._selectionStateBuffer === null ) {
 
-        let selection = this._selectionContainer;
+            let state = Object.assign( {}, defaultSelectionState );
 
-        /* global console */
-        console.log( selection.type, ToggleParser._getSourcePos( selection ) );
+            let selection = this._selectionContainer;
 
-        return state;
+            // Pitch posibilities
+            this._pitchStrong( state, selection );
+            this._pitchEmph( state, selection );
+
+            this._selectionStateBuffer = state;
+        }
+
+        return this._selectionStateBuffer;
+    }
+
+    /**
+     * Test for empty selection
+     */
+    _selectionIsEmpty() {
+        let selection = this._currentSelection;
+
+        return ToggleParser._cursorCompare(
+            selection.start, selection.end ) === 0;
+    }
+
+    /**
+     * Test if the current selection contains a token of a certain type
+     */
+    _selectionContainsTokenOfType( node, type ) {
+        let selection = this._currentSelection;
+
+        let child = node.firstChild;
+
+        while( child !== null ) {
+
+            // First do boundaries check
+            let container = ToggleParser._getSourcePos( child );
+            let endsBeforeSelection = ToggleParser._cursorCompare(
+                container.end, selection.start ) === -1;
+            let startsAfterSelection = ToggleParser._cursorCompare(
+                container.start, selection.end  ) === 1;
+
+            if ( startsAfterSelection ) {
+                // Conclude nothing found
+                return false;
+            }
+
+            // Skip if too early
+            if ( !endsBeforeSelection ) {
+                // Continue tests, falls within selection
+                if ( child.type === type ) {
+                    return true;
+                } else if ( child.isContainer ) {
+                    if ( this._selectionContainsTokenOfType( child, type ) ) {
+                        return true;
+                    }
+                }
+
+            }
+
+            // Do next child
+            child = child.next;
+        }
+
+        // Nothing found
+        return false;
     }
 
     /**
@@ -264,7 +416,7 @@ export default class ToggleParser {
 
             let child = node.firstChild;
 
-            while( child ) {
+            while( child !== null ) {
                 ToggleParser._innerPopulateSourcePos( child, currentLine,
                                                       currentChar );
                 currentLine = child._extraSourcepos[ 1 ][ 0 ];
@@ -290,6 +442,49 @@ export default class ToggleParser {
             [ startCurrentLine, startCurrentChar ],
             [ currentLine, currentChar - 1 ]
         ];
+    }
+
+    /**
+     * Test if a node is an inline
+     */
+    static _isInline( node ) {
+        return INLINES.has( node.type );
+    }
+
+    /**
+     * Test if a node is of a type or has ancestors of a type
+     *
+     * Optional only inlines
+     */
+    static _isOfTypeOrAncestors( node, type, onlyInlines ) {
+        if ( typeof onlyInlines === "undefined" ) {
+            onlyInlines = false;
+        } else {
+            onlyInlines = !!onlyInlines;
+        }
+
+        let nodeToTest = node;
+
+        if ( !ToggleParser._isInline( node ) && onlyInlines ) {
+            return false;
+        }
+
+        while( nodeToTest !== null ) {
+            if ( nodeToTest.type === type ) {
+                return true;
+            }
+
+            nodeToTest = nodeToTest.parent;
+
+            if ( onlyInlines && nodeToTest !== null &&
+                 !ToggleParser._isInline( nodeToTest ) ) {
+                nodeToTest = null;
+            }
+        }
+
+        // Nothing found
+        return false;
+
     }
 
 }
