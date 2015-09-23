@@ -24,18 +24,16 @@ export default class FullscreenButton extends Button {
 
         super( toolbar, OPTIONS );
 
-        let self = this;
-
-        this.on( "click", function() {
-            self.toolbar.editor.fullscreen();
+        this.on( "click", () => {
+            this.toolbar.editor.fullscreen();
         });
 
-        this.toolbar.editor.on( "fullscreen", function() {
-            self.activate( true );
+        this.toolbar.editor.on( "fullscreen", () => {
+            this.activate( true );
         });
 
-        this.toolbar.editor.on( "fullscreenExit", function() {
-            self.activate( false );
+        this.toolbar.editor.on( "fullscreenExit", () => {
+            this.activate( false );
         });
 
     }

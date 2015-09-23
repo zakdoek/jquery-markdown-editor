@@ -50,9 +50,6 @@ export default class Button extends EventSpawner {
      */
     _init() {
 
-        // Self map
-        let self = this;
-
         // Create the element
         this.$element = $( "<a></a>" );
 
@@ -67,27 +64,27 @@ export default class Button extends EventSpawner {
         }
 
         // Register the click
-        this.$element.click(function() {
-            self.trigger( "click" );
+        this.$element.click(() => {
+            this.trigger( "click" );
         });
 
         // Try to register disabling for preview msg
         if ( this._options.disabledInPreview ) {
             this._prePreviewState = null;
-            this.toolbar.editor.on( "preview", function() {
+            this.toolbar.editor.on( "preview", () => {
                 // Store pre preview state
-                if ( self._prePreviewState === null ) {
-                    self._prePreviewState = self._isDisabled;
+                if ( this._prePreviewState === null ) {
+                    this._prePreviewState = this._isDisabled;
                 }
-                self.disable( true );
+                this.disable( true );
             });
-            this.toolbar.editor.on( "previewExit", function() {
+            this.toolbar.editor.on( "previewExit", () => {
                 // Restore pre preview state
-                if ( self._prePreviewState !== null ) {
-                    self.disable( self._prePreviewState );
-                    self._prePreviewState = null;
+                if ( this._prePreviewState !== null ) {
+                    this.disable( this._prePreviewState );
+                    this._prePreviewState = null;
                 } else {
-                    self.disable( false );
+                    this.disable( false );
                 }
             });
         }

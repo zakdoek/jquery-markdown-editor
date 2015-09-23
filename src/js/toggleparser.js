@@ -53,8 +53,6 @@ export default class ToggleParser {
      */
     constructor( editor ) {
 
-        let self = this;
-
         this.editor = editor;
 
         this._parser = new Parser();
@@ -64,19 +62,19 @@ export default class ToggleParser {
         this._containingSelectionBuffer = null;
 
         // Add listener for value update
-        this.editor.codemirror.on( "update", function() {
+        this.editor.codemirror.on( "update", () => {
             // Invalidate ast tree
-            self._astTreeBuffer = null;
+            this._astTreeBuffer = null;
         });
 
         // Add listener for selection state update
-        this.editor.codemirror.on( "cursorActivity", function() {
+        this.editor.codemirror.on( "cursorActivity", () => {
             // Selection changed, invalidate states
-            self._selectionStateBuffer = null;
-            self._containingSelectionBuffer = null;
+            this._selectionStateBuffer = null;
+            this._containingSelectionBuffer = null;
 
             // Update
-            self.updateSelectionState();
+            this.updateSelectionState();
         });
 
     }

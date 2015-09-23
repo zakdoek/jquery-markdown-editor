@@ -44,8 +44,6 @@ export default class StatusBar {
     _init() {
 
         let $element;
-        let self = this;
-
         // Create linecount if desired
         $element = $( "<div>lines: </div>" );
         $element.addClass( "status-block line-status" );
@@ -78,20 +76,20 @@ export default class StatusBar {
         this._$element.append( $element );
 
         // Add codemirror listeners
-        this._editor.codemirror.on( "update", function() {
+        this._editor.codemirror.on( "update", () => {
             // Update line count
-            self._$lineCount.text( self._editor.codemirror.lineCount() );
+            this._$lineCount.text( this._editor.codemirror.lineCount() );
 
             // Update word count
-            self._$wordCount.text( self._getWordCount() );
+            this._$wordCount.text( this._getWordCount() );
 
         });
 
-        this._editor.codemirror.on( "cursorActivity", function() {
+        this._editor.codemirror.on( "cursorActivity", () => {
             // Update cursor position
-            let pos = self._editor.codemirror.getCursor( "from" );
-            self._$cursorLine.text( pos.line );
-            self._$cursorChar.text( pos.ch );
+            let pos = this._editor.codemirror.getCursor( "from" );
+            this._$cursorLine.text( pos.line );
+            this._$cursorChar.text( pos.ch );
         });
 
     }

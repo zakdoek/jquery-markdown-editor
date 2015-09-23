@@ -24,19 +24,17 @@ export default class PreviewButton extends Button {
 
         super( toolbar, OPTIONS );
 
-        let self = this;
-
-        this.on( "click", function() {
+        this.on( "click", () => {
             this.toolbar.editor.preview();
         });
 
         // Register status update listeners
-        this.toolbar.editor.on( "preview", function() {
-            self.activate( true );
+        this.toolbar.editor.on( "preview", () => {
+            this.activate( true );
         });
 
-        this.toolbar.editor.on( "previewExit", function() {
-            self.activate( false );
+        this.toolbar.editor.on( "previewExit", () => {
+            this.activate( false );
         });
 
     }

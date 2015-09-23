@@ -63,9 +63,6 @@ export default class Editor extends EventSpawner {
      */
     _init() {
 
-        // Map this
-        let self = this;
-
         // Set standard keymaps
         let keyMaps = {};
         keyMaps.Enter = "newlineAndIndentContinueMarkdownList";
@@ -105,12 +102,12 @@ export default class Editor extends EventSpawner {
 
         // setup fullscreen
         // Set up resizing for fullscreen stuff
-        $( window ).resize(function() {
-            if ( self._isFullscreen ) {
+        $( window ).resize(() => {
+            if ( this._isFullscreen ) {
                 let targetHeight = $( window ).height();
-                targetHeight -= self.toolbar.getHeight();
-                targetHeight -= self.statusBar.getHeight();
-                self.codemirror.setSize( null, targetHeight  );
+                targetHeight -= this.toolbar.getHeight();
+                targetHeight -= this.statusBar.getHeight();
+                this.codemirror.setSize( null, targetHeight  );
             }
         });
 

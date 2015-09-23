@@ -17,12 +17,9 @@ export default class UpdatingButton extends Button {
 
         super( toolbar, options );
 
-        let self = this;
-
         // Register binding on the editor
-        this.toolbar.editor.on( "selectionStateChange",
-                                function( selectionState ) {
-            self.update( selectionState );
+        this.toolbar.editor.on( "selectionStateChange", ( selectionState ) => {
+            this.update( selectionState );
         });
 
     }
