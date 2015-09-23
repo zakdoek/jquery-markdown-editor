@@ -7,8 +7,6 @@
 import $ from "jquery";
 import Editor from "./editor.js";
 
-console.log( "SHOULD ERROR" );
-
 $.fn.markdownEditor = function( options ) {
 
     if ( !$.isPlainObject( options ) ) {

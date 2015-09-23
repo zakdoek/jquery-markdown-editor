@@ -4,7 +4,7 @@
 
 // Load the font
 $jquery-markdown-editor-fonts-helper-active: false !default;
-$jquery-markdown-editor-font-path: "/fonts/" !default;
+$jquery-markdown-editor-font-path: "/fonts/fontello/" !default;
 @if $jquery-markdown-editor-fonts-helper-active {
     @font-face {
         font-family: 'jquery-markdown-editor';

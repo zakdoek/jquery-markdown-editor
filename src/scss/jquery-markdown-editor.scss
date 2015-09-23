@@ -2,6 +2,14 @@
  * Main scss
  */
 
+// Compass config
+@import "../../build-tools/generated-assets-build-dir";
+@import "compass/configuration";
+@include compass-configuration(
+    $fonts-path: $assets-build-dir + "/fonts",
+    $relative-assets: true
+);
+
 @import "./variables";
 @import "./fonts";
 @import "./codemirror";

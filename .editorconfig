@@ -28,3 +28,6 @@ indent_size = 2
 [Gruntfile.js]
 # Special treatment for the gruntfile
 indent_size = 2
+
+[Makefile]
+indent_style = tab
