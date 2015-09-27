@@ -22,7 +22,7 @@ build.dev: set_dev build
 start: build.dev watch
 
 set_dev:
-	@echo -e "\nDebug mode enbled\n"
+	@echo -e "\nDebug mode enabled\n"
 	$(eval DEBUG = 1)
 	$(eval SASS_STYLE = nested)
 	$(eval SASS_SOURCEMAP = file)
@@ -53,6 +53,7 @@ fonticons:
 stylesheets:
 	@echo -e "\nCompile stylesheets\n"
 	@# Setting config
+	@mkdir -p build-tools/
 	@echo -e "\$$assets-build-dir: \"$$PWD/$(BUILD_DIR)\";" > \
 		build-tools/generated-assets-build-dir.scss
 	@# Cache required css ad scss
