@@ -4,6 +4,7 @@
 
 import { Parser } from "commonmark";
 import Helpers from "./helpers.js";
+import PitcherCollection from "./pitcher-collection.js";
 
 // State prototype
 const defaultSelectionState = {
@@ -48,6 +49,9 @@ export default class ToggleParser {
         this._astTreeBuffer = null;
         this._selectionStateBuffer = null;
         this._containingSelectionBuffer = null;
+
+        // Create pitchers
+        this._pitcherCollection = new PitcherCollection( this );
 
         // Add listener for value update
         this.editor.codemirror.on( "update", () => {
@@ -276,111 +280,6 @@ export default class ToggleParser {
     }
 
     /**
-     * Pitch for bold
-     */
-    _pitchStrong( state, selection ) {
-        state.isStrong = Helpers.isOfTypeOrAncestors( selection,
-                                                            "Strong", true );
-
-        // If self or ancestor is strong, can unstrong toggle, so permit true.
-        if ( state.isStrong ) {
-            state.canStrong = true;
-            // Early exit
-            return;
-        }
-
-        // Shortcircuit on invalid blocks
-        if ( selection.type === "Image" || selection.type === "Link" ) {
-            state.canStrong = false;
-            return;
-        }
-
-        // Detect multiblock selection
-        if ( !Helpers.isHighestLevelBlock( selection ) ) {
-            state.canStrong = false;
-            return;
-        }
-
-        // An empty selection has no use here
-        if ( this._selectionIsEmpty() ) {
-            state.canStrong = true;
-            // Early exit
-            return;
-        }
-
-        // Test if the selection contains a strong
-        if ( !this._selectionContainsTokenOfType( selection, "Strong" ) ) {
-            state.canStrong = true;
-        }
-    }
-
-    /**
-     * Pitch for italic
-     */
-    _pitchEmph( state, selection ) {
-        state.isEm = Helpers.isOfTypeOrAncestors( selection, "Emph",
-                                                        true );
-        // If self or ancestor is emph, can unemph toggle, so permit true.
-        if ( state.isEm ) {
-            state.canEm = true;
-            // Early exit
-            return;
-        }
-
-        // Shortcircuit on invalid blocks
-        if ( selection.type === "Image" || selection.type === "Link" ) {
-            state.canEm = false;
-            return;
-        }
-
-        // Detect multiblock selection
-        if ( !Helpers.isHighestLevelBlock( selection ) ) {
-            state.canEm = false;
-            return;
-        }
-
-        // An empty selection has no use here
-        if ( this._selectionIsEmpty() ) {
-            state.canEm = true;
-            // Early exit
-            return;
-        }
-
-        // Test if the selection contains an emph
-        if ( !this._selectionContainsTokenOfType( selection, "Emph" ) ) {
-            state.canEm = true;
-        }
-    }
-
-    /**
-     * Pitch quote
-     */
-    _pitchQuote( state, selection ) {
-
-        // Try to bubble to the quote
-        state.isQuote = Helpers.isOfTypeOrAncestors(
-            selection, "BlockQuote", false );
-
-        // If of type quote, one can unquote
-        if ( state.isQuote ) {
-            state.canQuote = true;
-            return;
-        }
-
-        // Detect where a quote can be inserted
-        if ( Helpers.isOfTypeOrAncestors(
-                selection, "Paragraph", false ) ) {
-
-            if ( !Helpers.isOfTypeOrAncestors(
-                    selection, "List", false ) ) {
-                state.canQuote = true;
-                return;
-            }
-        }
-
-    }
-
-    /**
      * Fetch a selection state object
      */
     get _selectionState() {
@@ -389,12 +288,9 @@ export default class ToggleParser {
 
             let state = Object.assign( {}, defaultSelectionState );
 
-            let selection = this.selectionContainer;
-
             // Pitch posibilities
-            this._pitchStrong( state, selection );
-            this._pitchEmph( state, selection );
-            this._pitchQuote( state, selection );
+
+            this._pitcherCollection.pitch( state );
 
             this._selectionStateBuffer = state;
         }
@@ -405,7 +301,7 @@ export default class ToggleParser {
     /**
      * Test for empty selection
      */
-    _selectionIsEmpty() {
+    selectionIsEmpty() {
         let selection = this._currentSelection;
 
         return Helpers.cursorCompare(
@@ -415,7 +311,7 @@ export default class ToggleParser {
     /**
      * Test if the current selection contains a token of a certain type
      */
-    _selectionContainsTokenOfType( node, type ) {
+    selectionContainsTokenOfType( node, type ) {
         let selection = this._currentSelection;
 
         let child = node.firstChild;
@@ -440,7 +336,7 @@ export default class ToggleParser {
                 if ( child.type === type ) {
                     return true;
                 } else if ( child.isContainer ) {
-                    if ( this._selectionContainsTokenOfType( child, type ) ) {
+                    if ( this.selectionContainsTokenOfType( child, type ) ) {
                         return true;
                     }
                 }
