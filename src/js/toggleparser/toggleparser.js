@@ -75,7 +75,7 @@ export default class ToggleParser {
         if ( state.isStrong ) {
             // Set off
             let strongNode = Helpers.getHighestLevelNodeOfType(
-                this.selectionContainer, "Strong" );
+                this._selectionContainer, "Strong" );
             let strongPos = Helpers.getSourcePos( strongNode );
             let strongPosEnd = {
                 start: {
@@ -119,7 +119,7 @@ export default class ToggleParser {
         if ( state.isEm ) {
             // Set off
             let emNode = Helpers.getHighestLevelNodeOfType(
-                this.selectionContainer, "Emph" );
+                this._selectionContainer, "Emph" );
             let emPos = Helpers.getSourcePos( emNode );
             let emPosEnd = {
                 start: {
@@ -176,7 +176,7 @@ export default class ToggleParser {
     /**
      * Get the containing node of a current selection
      */
-    get selectionContainer() {
+    get _selectionContainer() {
 
         if ( this._containingSelectionBuffer === null ) {
 
