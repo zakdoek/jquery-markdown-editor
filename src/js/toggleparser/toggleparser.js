@@ -4,7 +4,7 @@
 
 import { Parser } from "commonmark";
 import Helpers from "./helpers.js";
-import PitcherCollection from "./pitcher-collection.js";
+import PitcherCollection from "./async-pitcher-collection.js";
 
 
 /**
@@ -48,7 +48,7 @@ export default class ToggleParser {
             this._selectionStateBuffer = state;
 
             // Trigger update
-            this.updateSelectionState();
+            this._updateSelectionState();
         });
 
         // Do initial pitch
@@ -59,7 +59,7 @@ export default class ToggleParser {
     /**
      * Trigger the selection state
      */
-    updateSelectionState() {
+    _updateSelectionState() {
         this.editor.trigger( "selectionStateChange", this._selectionState );
     }
 
@@ -104,7 +104,7 @@ export default class ToggleParser {
         this._astTreeBuffer = null;
         this._selectionStateBuffer = null;
         this._containingSelectionBuffer = null;
-        this.updateSelectionState();
+        this._updateSelectionState();
     }
 
     /**
@@ -147,7 +147,7 @@ export default class ToggleParser {
         this._astTreeBuffer = null;
         this._selectionStateBuffer = null;
         this._containingSelectionBuffer = null;
-        this.updateSelectionState();
+        this._updateSelectionState();
     }
 
     /**

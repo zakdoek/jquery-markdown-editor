@@ -11,30 +11,7 @@ import StrongPitcher from "./strongpitcher.js";
 import EmPitcher from "./empitcher.js";
 import QuotePitcher from "./quotepitcher.js";
 
-// State prototype
-const defaultSelectionState = {
-
-    // Check the validity of the selection
-    canStrong: false,
-    canEm: false,
-    canQuote: false,
-    canCode: false,
-    canUl: false,
-    canOl: false,
-    canLink: false,
-    canImage: false,
-
-    // Check the value of the selection
-    isStrong: false,
-    isEm: false,
-    isQuote: false,
-    isCode: false,
-    isUl: false,
-    isOl: false,
-    isLink: false,
-    isImage: false
-
-};
+import defaultState from "./default-state.js";
 
 
 /**
@@ -54,11 +31,7 @@ export default class PitcherCollection extends EventSpawner {
 
         this._parser = new Parser();
 
-        this._pitchers = [];
-
-        this._pitchers.push( new StrongPitcher() );
-        this._pitchers.push( new EmPitcher() );
-        this._pitchers.push( new QuotePitcher() );
+        this._pitcherCache = null;
     }
 
     /**
@@ -67,7 +40,7 @@ export default class PitcherCollection extends EventSpawner {
     pitch() {
 
         // Needs external communication
-        let state = Object.assign( {}, defaultSelectionState );
+        let state = this._stateObject;
         let selection = this.toggleParser.currentSelection;
 
         // All internal from now on
@@ -83,6 +56,29 @@ export default class PitcherCollection extends EventSpawner {
 
         // Return back to external
         this.trigger( "pitched", state );
+    }
+
+    /**
+     * Lazy pitchers getter
+     */
+    get _pitchers() {
+
+        if ( this._pitcherCache === null ) {
+            this._pitcherCache = [
+                new StrongPitcher(),
+                new EmPitcher(),
+                new QuotePitcher()
+            ];
+        }
+
+        return this._pitcherCache;
+    }
+
+    /**
+     * get empty state object
+     */
+    get _stateObject() {
+        return Object.assign( {}, defaultState );
     }
 
 }

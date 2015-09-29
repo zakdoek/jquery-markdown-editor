@@ -123,9 +123,6 @@ export default class Editor extends EventSpawner {
         $( this.codemirror.getWrapperElement() ).append(
             this._$previewContainer );
 
-        // Update the selection state
-        this.toggleParser.updateSelectionState();
-
     }
 
     /**
