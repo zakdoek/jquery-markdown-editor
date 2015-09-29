@@ -6,9 +6,9 @@ import { Parser } from "commonmark";
 
 import Helpers from "./helpers.js";
 
-import StrongPitcher from "./strongpitcher.js";
-import EmPitcher from "./empitcher.js";
-import QuotePitcher from "./quotepitcher.js";
+import StrongPitcher from "./pitchers/strongpitcher.js";
+import EmPitcher from "./pitchers/empitcher.js";
+import QuotePitcher from "./pitchers/quotepitcher.js";
 
 import defaultState from "./default-state.js";
 

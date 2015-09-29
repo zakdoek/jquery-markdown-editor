@@ -19,7 +19,7 @@ class ThreadedPitcherCollection extends PitcherCollection {
         this._shouldRetrigger = false;
 
         this._worker = workerFactory(
-            require( "./async-pitcher-collection-worker.js" )
+            require( "./threaded-pitcher-collection-worker.js" )
         );
 
         this._worker.addEventListener( "message", ( event ) => {

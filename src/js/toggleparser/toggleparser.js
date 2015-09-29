@@ -4,7 +4,7 @@
 
 import { Parser } from "commonmark";
 import Helpers from "./helpers.js";
-import PitcherCollection from "./async-pitcher-collection.js";
+import PitcherCollection from "./threaded-pitcher-collection.js";
 
 
 /**

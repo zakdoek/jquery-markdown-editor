@@ -3,7 +3,7 @@
  */
 
 import Pitcher from "./pitcher.js";
-import Helpers from "./helpers.js";
+import Helpers from "../helpers.js";
 
 export default class QuotePitcher extends Pitcher {
 
