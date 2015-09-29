@@ -28,5 +28,8 @@
   },
   "browserify-shim": {
     "jquery": "global:jQuery"
+  },
+  "dependencies": {
+    "webworkify": "^1.0.2"
   }
 }

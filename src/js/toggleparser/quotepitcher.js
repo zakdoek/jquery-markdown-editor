@@ -10,25 +10,24 @@ export default class QuotePitcher extends Pitcher {
     /**
      * Pitch for quotes
      */
-    pitch( state ) {
-        let selection = this.parser.selectionContainer;
+    pitch() {
         // Try to bubble to the quote
-        state.isQuote = Helpers.isOfTypeOrAncestors(
-            selection, "BlockQuote", false );
+        this.state.isQuote = Helpers.isOfTypeOrAncestors(
+            this.selectionContainer, "BlockQuote", false );
 
         // If of type quote, one can unquote
-        if ( state.isQuote ) {
-            state.canQuote = true;
+        if ( this.state.isQuote ) {
+            this.state.canQuote = true;
             return;
         }
 
         // Detect where a quote can be inserted
         if ( Helpers.isOfTypeOrAncestors(
-                selection, "Paragraph", false ) ) {
+                this.selectionContainer, "Paragraph", false ) ) {
 
             if ( !Helpers.isOfTypeOrAncestors(
-                    selection, "List", false ) ) {
-                state.canQuote = true;
+                    this.selectionContainer, "List", false ) ) {
+                this.state.canQuote = true;
                 return;
             }
         }

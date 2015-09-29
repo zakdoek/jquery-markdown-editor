@@ -196,4 +196,137 @@ export default class Helpers {
 
         return false;
     }
+
+    /**
+     * Test if the current selection contains a token of a certain type
+     */
+    static selectionContainsTokenOfType( selection, node, type ) {
+        let child = node.firstChild;
+
+        while( child !== null ) {
+
+            // First do boundaries check
+            let container = Helpers.getSourcePos( child );
+            let endsBeforeSelection = Helpers.cursorCompare(
+                container.end, selection.start ) === -1;
+            let startsAfterSelection = Helpers.cursorCompare(
+                container.start, selection.end  ) === 1;
+
+            if ( startsAfterSelection ) {
+                // Conclude nothing found
+                return false;
+            }
+
+            // Skip if too early
+            if ( !endsBeforeSelection ) {
+                // Continue tests, falls within selection
+                if ( child.type === type ) {
+                    return true;
+                } else if ( child.isContainer ) {
+                    if ( Helpers.selectionContainsTokenOfType(
+                            selection, child, type ) ) {
+                        return true;
+                    }
+                }
+
+            }
+
+            // Do next child
+            child = child.next;
+        }
+
+        // Nothing found
+        return false;
+    }
+
+    /**
+     * Try to zoom a level
+     *
+     * Returns child node if zoom was succesfull, false otherwise.
+     *
+     * A zoom works like this:
+     *
+     * Scan the children of the node.
+     *
+     * If a child is a container, test if it contains the selection. If it
+     * does, return the child. Else, go to the next child for testing.
+     *
+     * Also throw in some optimisation. If the child is a container but starts
+     * beyond the selection, one can safely assume the following selections
+     * will not match. Therefore, return false directly.
+     *
+     * Return false if no child could be tested.
+     */
+    static tryLevelZoom( node, selection ) {
+
+        // Populate initial child
+        let child = node.firstChild;
+
+        while( child !== null ) {
+
+            // Only scan containers
+            if ( child.isContainer ) {
+                // Perform tests
+                // Start of selection should be greater than child span
+                // End of selection should be lesser than child span
+
+                // Convenience variables
+                let childSourceRange = Helpers.getSourcePos( child );
+                let compChildSelectionStart = Helpers.cursorCompare(
+                    childSourceRange.start, selection.start );
+                let compChildSelectionEnd = Helpers.cursorCompare(
+                    childSourceRange.end, selection.end );
+
+                // Test for hit
+                // child Start should be less or equal than selection start
+                // child End should be greater or equal than selection end
+                if ( compChildSelectionStart <= 0 &&
+                     compChildSelectionEnd >= 0) {
+                    return child;
+                }
+
+                // Test if further walking is futile
+                // child start should be greater than selection start
+                // Short circuit
+                if ( compChildSelectionStart === 1 ) {
+                    return false;
+                }
+            }
+
+            // Select the next for scanning
+            child = child.next;
+        }
+
+        // Nothing found, return false
+        return false;
+    }
+
+    /**
+     * Get the containing node of a current selection
+     */
+    static getSelectionContainer( selection, tree ) {
+
+        let node = tree;
+        let attempt = Helpers.tryLevelZoom( node, selection );
+
+        while( attempt ) {
+
+            // Attempt is true, so set to node
+            node = attempt;
+
+            // New attempt
+            attempt = Helpers.tryLevelZoom( node, selection );
+
+        }
+
+        return node;
+    }
+
+    /**
+     * Test for empty selection
+     */
+    static selectionIsEmpty( selection ) {
+        return Helpers.cursorCompare(
+            selection.start, selection.end ) === 0;
+    }
 }

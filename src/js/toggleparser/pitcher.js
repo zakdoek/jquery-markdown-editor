@@ -10,8 +10,10 @@ export default class Pitcher {
     /**
      * Construtor needs reference to toggleparser
      */
-    constructor( parser ) {
-        this.parser = parser;
+    constructor() {
+        this.state = null;
+        this.selection = null;
+        this.selectionContainer = null;
     }
 
     /**

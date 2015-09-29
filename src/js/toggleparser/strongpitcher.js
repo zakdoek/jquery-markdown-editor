@@ -10,41 +10,42 @@ export default class StrongPitcher extends Pitcher {
     /**
      * Pitches
      */
-    pitch( state ) {
-        let selection = this.parser.selectionContainer;
-        state.isStrong = Helpers.isOfTypeOrAncestors( selection,
-                                                           "Strong", true );
+    pitch() {
+        this.state.isStrong = Helpers.isOfTypeOrAncestors(
+            this.selectionContainer, "Strong", true );
 
         // If self or ancestor is strong, can unstrong toggle, so permit true.
-        if ( state.isStrong ) {
-            state.canStrong = true;
+        if ( this.state.isStrong ) {
+            this.state.canStrong = true;
             // Early exit
             return;
         }
 
         // Shortcircuit on invalid blocks
-        if ( selection.type === "Image" || selection.type === "Link" ) {
-            state.canStrong = false;
+        if ( this.selectionContainer.type === "Image" ||
+             this.selectionContainer.type === "Link" ) {
+            this.state.canStrong = false;
             return;
         }
 
         // Detect multiblock selection
-        if ( !Helpers.isHighestLevelBlock( selection ) ) {
-            state.canStrong = false;
+        if ( !Helpers.isHighestLevelBlock( this.selectionContainer ) ) {
+            this.state.canStrong = false;
             return;
         }
 
         // An empty selection has no use here
-        if ( this.parser.selectionIsEmpty() ) {
-            state.canStrong = true;
+        if ( Helpers.selectionIsEmpty( this.selection ) ) {
+            this.state.canStrong = true;
             // Early exit
             return;
         }
 
         // Test if the selection contains a strong
-        if ( !this.parser.selectionContainsTokenOfType( selection,
-                                                        "Strong" ) ) {
-            state.canStrong = true;
+        if ( !Helpers.selectionContainsTokenOfType(
+                this.selection, this.selectionContainer,
+                "Strong" ) ) {
+            this.state.canStrong = true;
         }
     }
 

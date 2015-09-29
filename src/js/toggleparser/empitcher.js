@@ -10,39 +10,41 @@ export default class StrongPitcher extends Pitcher {
     /**
      * Pitches
      */
-    pitch( state ) {
-        let selection = this.parser.selectionContainer;
-        state.isEm = Helpers.isOfTypeOrAncestors( selection, "Emph",
-                                                        true );
+    pitch() {
+        this.state.isEm = Helpers.isOfTypeOrAncestors( this.selectionContainer,
+                                                       "Emph", true );
         // If self or ancestor is emph, can unemph toggle, so permit true.
-        if ( state.isEm ) {
-            state.canEm = true;
+        if ( this.state.isEm ) {
+            this.state.canEm = true;
             // Early exit
             return;
         }
 
         // Shortcircuit on invalid blocks
-        if ( selection.type === "Image" || selection.type === "Link" ) {
-            state.canEm = false;
+        if ( this.selectionContainer.type === "Image" ||
+             this.selectionContainer.type === "Link" ) {
+            this.state.canEm = false;
             return;
         }
 
         // Detect multiblock selection
-        if ( !Helpers.isHighestLevelBlock( selection ) ) {
-            state.canEm = false;
+        if ( !Helpers.isHighestLevelBlock( this.selectionContainer ) ) {
+            this.state.canEm = false;
             return;
         }
 
         // An empty selection has no use here
-        if ( this.parser.selectionIsEmpty() ) {
-            state.canEm = true;
+        if ( Helpers.selectionIsEmpty( this.selection ) ) {
+            this.state.canEm = true;
             // Early exit
             return;
         }
 
         // Test if the selection contains an emph
-        if ( !this.parser.selectionContainsTokenOfType( selection, "Emph" ) ) {
-            state.canEm = true;
+        if ( !Helpers.selectionContainsTokenOfType(
+                this.selection,
+                this.selectionContainer, "Emph" ) ) {
+            this.state.canEm = true;
         }
     }
 
