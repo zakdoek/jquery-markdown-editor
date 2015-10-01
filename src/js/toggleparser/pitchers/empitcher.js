@@ -21,8 +21,7 @@ export default class StrongPitcher extends Pitcher {
         }
 
         // Shortcircuit on invalid blocks
-        if ( this.selectionContainer.type === "Image" ||
-             this.selectionContainer.type === "Link" ) {
+        if ( this.selectionContainer.type === "Image" ) {
             this.state.canEm = false;
             return;
         }
@@ -35,7 +34,7 @@ export default class StrongPitcher extends Pitcher {
 
         // An empty selection has no use here
         if ( Helpers.selectionIsEmpty( this.selection ) ) {
-            this.state.canEm = true;
+            this.state.canEm = false;
             // Early exit
             return;
         }
@@ -45,6 +44,14 @@ export default class StrongPitcher extends Pitcher {
                 this.selection,
                 this.selectionContainer, "Emph" ) ) {
             this.state.canEm = true;
+        }
+
+        // Test for links if selection is inside link
+        if ( this.selectionContainer.type === "Link" ) {
+            if ( !Helpers.selectionIsLimitedToContent(
+                    this.selection, this.selectionContainer ) ) {
+                this.state.canEm = false;
+            }
         }
     }
 

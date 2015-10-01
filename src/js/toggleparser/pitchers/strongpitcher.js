@@ -22,8 +22,7 @@ export default class StrongPitcher extends Pitcher {
         }
 
         // Shortcircuit on invalid blocks
-        if ( this.selectionContainer.type === "Image" ||
-             this.selectionContainer.type === "Link" ) {
+        if ( this.selectionContainer.type === "Image" ) {
             this.state.canStrong = false;
             return;
         }
@@ -36,7 +35,7 @@ export default class StrongPitcher extends Pitcher {
 
         // An empty selection has no use here
         if ( Helpers.selectionIsEmpty( this.selection ) ) {
-            this.state.canStrong = true;
+            this.state.canStrong = false;
             // Early exit
             return;
         }
@@ -47,6 +46,16 @@ export default class StrongPitcher extends Pitcher {
                 "Strong" ) ) {
             this.state.canStrong = true;
         }
+
+        // Test for links if selection is inside link
+        if ( this.selectionContainer.type === "Link" ) {
+            if ( !Helpers.selectionIsLimitedToContent(
+                    this.selection, this.selectionContainer ) ) {
+                this.state.canStrong = false;
+            }
+        }
+
+        // Test if selection of children is not fully overlapping
     }
 
 }

@@ -329,4 +329,25 @@ export default class Helpers {
         return Helpers.cursorCompare(
             selection.start, selection.end ) === 0;
     }
+
+    /**
+     * Test if inner selection contains a part of the destination
+     *
+     * Assumes a zoomed node
+     */
+    static selectionIsLimitedToContent( selection, node ) {
+
+        if ( !node.isContainer ) {
+            return true;
+        }
+
+        let start = Helpers.getSourcePos( node.firstChild ).start;
+        let end = Helpers.getSourcePos( node.lastChild ).end;
+
+        if ( Helpers.cursorCompare( start, selection.start ) <= 0 &&
+             Helpers.cursorCompare( end, selection.end ) >= 0 ) {
+            return true;
+        }
+        return false;
+    }
 }

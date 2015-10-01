@@ -3,8 +3,10 @@
  */
 
 import { Parser } from "commonmark";
+
 import Helpers from "./helpers.js";
 import PitcherCollection from "./threaded-pitcher-collection.js";
+import ActionsLibrary from "./action-library.js";
 
 
 /**
@@ -27,6 +29,9 @@ export default class ToggleParser {
 
         // Create pitchers
         this._pitcherCollection = new PitcherCollection( this );
+
+        // Load actions
+        this.actions = new ActionsLibrary( this );
 
         // Add listener for value update
         this.editor.codemirror.on( "update", () => {
@@ -60,94 +65,7 @@ export default class ToggleParser {
      * Trigger the selection state
      */
     _updateSelectionState() {
-        this.editor.trigger( "selectionStateChange", this._selectionState );
-    }
-
-    /**
-     * Toggle bold
-     */
-    toggleStrong() {
-        let state = this._selectionState;
-        if ( !state.canStrong ) {
-            return;
-        }
-
-        if ( state.isStrong ) {
-            // Set off
-            let strongNode = Helpers.getHighestLevelNodeOfType(
-                this._selectionContainer, "Strong" );
-            let strongPos = Helpers.getSourcePos( strongNode );
-            let strongPosEnd = {
-                start: {
-                    line: strongPos.start.line,
-                    ch: strongPos.start.ch + 2
-                },
-                end: {
-                    line: strongPos.end.line,
-                    ch: strongPos.end.ch - 4
-                }
-            };
-
-            strongPos.end.ch -= 2;
-
-            this.editor.codemirror.replaceRange( "", strongPos.start,
-                                                 strongPosEnd.start );
-            this.editor.codemirror.replaceRange( "", strongPosEnd.end,
-                                                 strongPos.end );
-        } else {
-            // Set on
-            let selection = this.currentSelection;
-            this.editor.codemirror.replaceRange( "**", selection.end );
-            this.editor.codemirror.replaceRange( "**", selection.start );
-        }
-
-        this._astTreeBuffer = null;
-        this._selectionStateBuffer = null;
-        this._containingSelectionBuffer = null;
-        this._updateSelectionState();
-    }
-
-    /**
-     * Toggle em
-     */
-    toggleEm() {
-        let state = this._selectionState;
-        if ( !state.canEm ) {
-            return;
-        }
-
-        if ( state.isEm ) {
-            // Set off
-            let emNode = Helpers.getHighestLevelNodeOfType(
-                this._selectionContainer, "Emph" );
-            let emPos = Helpers.getSourcePos( emNode );
-            let emPosEnd = {
-                start: {
-                    line: emPos.start.line,
-                    ch: emPos.start.ch + 1
-                },
-                end: {
-                    line: emPos.end.line,
-                    ch: emPos.end.ch - 2
-                }
-            };
-
-            emPos.end.ch -= 1;
-
-            this.editor.codemirror.replaceRange( "", emPos.start,
-                                                 emPosEnd.start );
-            this.editor.codemirror.replaceRange( "", emPosEnd.end, emPos.end );
-        } else {
-            // Set on
-            let selection = this.currentSelection;
-            this.editor.codemirror.replaceRange( "_", selection.end );
-            this.editor.codemirror.replaceRange( "_", selection.start );
-        }
-
-        this._astTreeBuffer = null;
-        this._selectionStateBuffer = null;
-        this._containingSelectionBuffer = null;
-        this._updateSelectionState();
+        this.editor.trigger( "selectionStateChange", this.selectionState );
     }
 
     /**
@@ -176,7 +94,7 @@ export default class ToggleParser {
     /**
      * Get the containing node of a current selection
      */
-    get _selectionContainer() {
+    get selectionContainer() {
 
         if ( this._containingSelectionBuffer === null ) {
 
@@ -192,7 +110,7 @@ export default class ToggleParser {
     /**
      * Fetch a selection state object
      */
-    get _selectionState() {
+    get selectionState() {
         return this._selectionStateBuffer;
     }
 }
