@@ -39,6 +39,12 @@ export default class StrongPitcher extends Pitcher {
             return;
         }
 
+        // Test if selection of children is not fully overlapping
+        if ( Helpers.childContainerIsPartiallySelected(
+                this.selection, this.selectionContainer ) ) {
+            return;
+        }
+
         // Test if the selection contains an emph
         if ( !Helpers.selectionContainsTokenOfType(
                 this.selection,

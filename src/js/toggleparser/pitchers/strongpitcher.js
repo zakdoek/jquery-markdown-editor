@@ -40,6 +40,12 @@ export default class StrongPitcher extends Pitcher {
             return;
         }
 
+        // Test if selection of children is not fully overlapping
+        if ( Helpers.childContainerIsPartiallySelected(
+                this.selection, this.selectionContainer ) ) {
+            return;
+        }
+
         // Test if the selection contains a strong
         if ( !Helpers.selectionContainsTokenOfType(
                 this.selection, this.selectionContainer,
@@ -54,8 +60,6 @@ export default class StrongPitcher extends Pitcher {
                 this.state.canStrong = false;
             }
         }
-
-        // Test if selection of children is not fully overlapping
     }
 
 }

@@ -27,7 +27,7 @@ export default class Editor extends EventSpawner {
      *
      * Expects the target element, and options
      */
-    constructor( $element, options ) {
+    constructor( $element, options = {} ) {
 
         // Init the super class
         super();

@@ -132,12 +132,8 @@ export default class Helpers {
      *
      * Optional only inlines
      */
-    static isOfTypeOrAncestors( node, type, onlyInlines ) {
-        if ( typeof onlyInlines === "undefined" ) {
-            onlyInlines = false;
-        } else {
-            onlyInlines = !!onlyInlines;
-        }
+    static isOfTypeOrAncestors( node, type, onlyInlines = false ) {
+        onlyInlines = !!onlyInlines;
 
         let nodeToTest = node;
 
@@ -348,6 +344,37 @@ export default class Helpers {
              Helpers.cursorCompare( end, selection.end ) >= 0 ) {
             return true;
         }
+        return false;
+    }
+
+    /**
+     * Test if a child container is only partially selected
+     */
+    static childContainerIsPartiallySelected( selection, node ) {
+
+        // Short circuit
+        if ( !node.isContainer || node.firstChild === node.lastChild ) {
+            return false;
+        }
+
+        // Get the node containing the start of selection
+        // Get the node containing the end of selection
+        // Use nodes to detect partial selection
+
+        let startSelectionContainer = Helpers.getSelectionContainer({
+            start: selection.start,
+            end: selection.start
+        }, node );
+
+        let endSelectionContainer = Helpers.getSelectionContainer({
+            start: selection.end,
+            end: selection.end
+        }, node );
+
+        if ( startSelectionContainer !== endSelectionContainer ) {
+            return true;
+        }
+
         return false;
     }
 }
