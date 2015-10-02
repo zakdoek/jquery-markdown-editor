@@ -9,6 +9,7 @@ import Helpers from "./helpers.js";
 import StrongPitcher from "./pitchers/strongpitcher.js";
 import EmPitcher from "./pitchers/empitcher.js";
 import QuotePitcher from "./pitchers/quotepitcher.js";
+import LinkPitcher from "./pitchers/linkpitcher.js";
 
 import defaultState from "./default-state.js";
 
@@ -20,7 +21,8 @@ export default function( worker ) {
     let pitchers = [
         new StrongPitcher(),
         new EmPitcher(),
-        new QuotePitcher()
+        new QuotePitcher(),
+        new LinkPitcher()
     ];
 
     worker.addEventListener( "message", function( event ) {

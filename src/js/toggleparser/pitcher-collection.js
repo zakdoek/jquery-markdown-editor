@@ -10,6 +10,7 @@ import Helpers from "./helpers.js";
 import StrongPitcher from "./pitchers/strongpitcher.js";
 import EmPitcher from "./pitchers/empitcher.js";
 import QuotePitcher from "./pitchers/quotepitcher.js";
+import LinkPitcher from "./pitchers/linkpitcher.js";
 
 import defaultState from "./default-state.js";
 
@@ -67,7 +68,8 @@ export default class PitcherCollection extends EventSpawner {
             this._pitcherCache = [
                 new StrongPitcher(),
                 new EmPitcher(),
-                new QuotePitcher()
+                new QuotePitcher(),
+                new LinkPitcher()
             ];
         }
 
