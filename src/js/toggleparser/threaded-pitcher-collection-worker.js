@@ -11,6 +11,8 @@ import EmPitcher from "./pitchers/empitcher.js";
 import QuotePitcher from "./pitchers/quotepitcher.js";
 import LinkPitcher from "./pitchers/linkpitcher.js";
 import ImagePitcher from "./pitchers/imagepitcher.js";
+import UnorderedListPitcher from "./pitchers/unorderedlistpitcher.js";
+import OrderedListPitcher from "./pitchers/orderedlistpitcher.js";
 
 import defaultState from "./default-state.js";
 
@@ -24,7 +26,9 @@ export default function( worker ) {
         new EmPitcher(),
         new QuotePitcher(),
         new LinkPitcher(),
-        new ImagePitcher()
+        new ImagePitcher(),
+        new UnorderedListPitcher(),
+        new OrderedListPitcher()
     ];
 
     worker.addEventListener( "message", function( event ) {
