@@ -25,7 +25,7 @@ export default class Quote extends Action {
         let fromCh = position.start.ch;
         let toCh = fromCh + 2;
 
-        for (let i = position.start.line; i <= position.end.line; i++ ) {
+        for ( let i = position.start.line; i <= position.end.line; i++ ) {
             this.parser.editor.codemirror.replaceRange( "", {
                 line: i,
                 ch: fromCh
@@ -50,10 +50,27 @@ export default class Quote extends Action {
      * On action
      */
     _on() {
-        console.log( "Quote" );
+        let subject = Helpers.getHighestLevelBlock(
+            this.parser.selectionContainer );
+        let position = Helpers.getSourcePos( subject );
+        let fromCh = position.start.ch;
 
-        // Todo => Prepend each line with "> "
-        // Find highest level "> "
+        for ( let i = position.start.line; i <= position.end.line; i++ ) {
+            this.parser.editor.codemirror.replaceRange( "> ", {
+                line: i,
+                ch: fromCh
+            }, undefined, "+quote" );
+        }
+
+        // Clear selection
+        this.parser.editor.codemirror.setCursor(
+            this.parser.currentSelection.start );
+
+        // Focus the editor
+        this.parser.editor.codemirror.focus();
+
+        // Trigger pitch
+        this.parser.pitch();
     }
 
     /**
