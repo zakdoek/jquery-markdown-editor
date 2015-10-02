@@ -11,7 +11,7 @@ const defaultToolbar = [
     "italic",
     "separator",
     "quote",
-    "code",
+    // "code",
     "separator",
     "unorderedlist",
     "orderedlist",
