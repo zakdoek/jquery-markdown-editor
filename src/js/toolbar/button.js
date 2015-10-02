@@ -112,10 +112,6 @@ export default class Button extends EventSpawner {
             // Icon change if desired
             if ( this._options.activeIconClass ) {
                 this.$element.addClass( this._options.activeIconClass );
-
-                if ( this._options.iconClass ) {
-                    this.$element.removeClass( this._options.iconClass );
-                }
             }
 
             // Title change if desired
@@ -134,7 +130,6 @@ export default class Button extends EventSpawner {
 
             // Icon change if desired
             if ( this._options.iconClass && this._options.activeIconClass ) {
-                this.$element.addClass( this._options.iconClass );
                 this.$element.removeClass( this._options.activeIconClass );
             }
 
