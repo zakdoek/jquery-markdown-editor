@@ -73,8 +73,52 @@ export default class Emph extends Action {
      * On action
      */
     _on() {
-        /* global console */
-        console.log( "Wrap in em" );
+        let selection = this.parser.currentSelection;
+
+        let insertStart = {
+            line: selection.start.line,
+            ch: selection.start.ch
+        };
+
+        let insertEnd = {
+            line: selection.end.line,
+            ch: selection.end.ch
+        };
+
+        if ( selection.start.line === selection.end.line ) {
+            insertEnd.ch += 1;
+        }
+
+        // get Char after/before insert char and skip if space
+        let selectionText = this.parser.editor.codemirror.getRange(
+            selection.start, selection.end );
+
+        // Forward
+        for ( let selectionChar of selectionText ) {
+            if ( selectionChar !== " " ) {
+                break;
+            }
+            insertStart.ch++;
+        }
+
+        // Rewind
+        for ( let sChar of selectionText.split("").reverse().join("") ) {
+            if ( sChar !== " " ) {
+                break;
+            }
+            insertEnd.ch--;
+        }
+
+        this.parser.editor.codemirror.replaceRange( "_", insertStart,
+                                                    undefined, "+emph" );
+        this.parser.editor.codemirror.replaceRange( "_", insertEnd,
+                                                    undefined, "+emph" );
+
+        insertStart.ch += 1;
+
+        this.parser.editor.codemirror.setSelection( insertStart, insertEnd );
+
+        this.parser.editor.codemirror.focus();
     }
 
     /**
