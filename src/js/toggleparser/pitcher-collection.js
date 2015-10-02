@@ -11,6 +11,7 @@ import StrongPitcher from "./pitchers/strongpitcher.js";
 import EmPitcher from "./pitchers/empitcher.js";
 import QuotePitcher from "./pitchers/quotepitcher.js";
 import LinkPitcher from "./pitchers/linkpitcher.js";
+import ImagePitcher from "./pitchers/imagepitcher.js";
 
 import defaultState from "./default-state.js";
 
@@ -69,7 +70,8 @@ export default class PitcherCollection extends EventSpawner {
                 new StrongPitcher(),
                 new EmPitcher(),
                 new QuotePitcher(),
-                new LinkPitcher()
+                new LinkPitcher(),
+                new ImagePitcher()
             ];
         }
 
