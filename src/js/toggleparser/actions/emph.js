@@ -67,6 +67,9 @@ export default class Emph extends Action {
 
         // Focus the editor
         this.parser.editor.codemirror.focus();
+
+        // Trigger pitch
+        this.parser.pitch();
     }
 
     /**
@@ -119,6 +122,9 @@ export default class Emph extends Action {
         this.parser.editor.codemirror.setSelection( insertStart, insertEnd );
 
         this.parser.editor.codemirror.focus();
+
+        // Trigger pitch
+        this.parser.pitch();
     }
 
     /**

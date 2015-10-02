@@ -113,4 +113,11 @@ export default class ToggleParser {
     get selectionState() {
         return this._selectionStateBuffer;
     }
+
+    /**
+     * Pitch the state
+     */
+    pitch() {
+        this._pitcherCollection.pitch();
+    }
 }
