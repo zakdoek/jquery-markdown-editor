@@ -61,7 +61,9 @@ export default class Helpers {
             currentChar += addChars;
         } else if ( node.type === "Softbreak" || node.type === "Hardbreak" ) {
             currentLine += 1;
-            currentChar = 1;
+            // Make sure blockQuote offset is taken into account
+            let block = Helpers.getHighestLevelBlock( node );
+            currentChar = Helpers.getSourcePos( block ).start.ch + 1;
         } else {
             currentChar += node.literal.length;
         }
@@ -175,6 +177,22 @@ export default class Helpers {
         }
 
         return true;
+    }
+
+    /**
+     * Get the hightest level that is a block type
+     */
+    static getHighestLevelBlock( node ) {
+
+        while( node !== null ) {
+            if ( !INLINES.has( node.type ) ) {
+                return node;
+            }
+
+            node = node.parent;
+        }
+
+        return false;
     }
 
     /**
