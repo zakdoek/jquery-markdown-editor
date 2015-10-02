@@ -24,6 +24,10 @@ export default class QuoteButton extends UpdatingButton {
 
         super( toolbar, OPTIONS );
 
+        this.on( "click", function() {
+            this.toolbar.editor.toggleParser.actions.quote.toggle();
+        });
+
     }
 
     /**
