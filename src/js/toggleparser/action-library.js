@@ -7,6 +7,7 @@ import Emph from "./actions/emph.js";
 import Quote from "./actions/quote.js";
 import UnorderedList from "./actions/unordered-list.js";
 import OrderedList from "./actions/ordered-list.js";
+import Link from "./actions/link.js";
 
 
 /**
@@ -20,5 +21,6 @@ export default class ActionsLibrary {
         this.quote = new Quote( toggleParser );
         this.unorderedList = new UnorderedList( toggleParser );
         this.orderedList = new OrderedList( toggleParser );
+        this.link = new Link( toggleParser );
     }
 }
