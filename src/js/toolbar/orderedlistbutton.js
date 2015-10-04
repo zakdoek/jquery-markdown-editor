@@ -23,6 +23,9 @@ export default class OrderedListButton extends UpdatingButton {
 
         super( toolbar, OPTIONS );
 
+        this.on( "click", function() {
+            this.toolbar.editor.toggleParser.actions.orderedList.toggle();
+        });
     }
 
     /**

@@ -5,6 +5,8 @@
 import Strong from "./actions/strong.js";
 import Emph from "./actions/emph.js";
 import Quote from "./actions/quote.js";
+import UnorderedList from "./actions/unordered-list.js";
+import OrderedList from "./actions/ordered-list.js";
 
 
 /**
@@ -16,5 +18,7 @@ export default class ActionsLibrary {
         this.strong = new Strong( toggleParser );
         this.emph = new Emph( toggleParser );
         this.quote = new Quote( toggleParser );
+        this.unorderedList = new UnorderedList( toggleParser );
+        this.orderedList = new OrderedList( toggleParser );
     }
 }

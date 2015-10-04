@@ -23,6 +23,9 @@ export default class UnorderedListButton extends UpdatingButton {
 
         super( toolbar, OPTIONS );
 
+        this.on( "click", function() {
+            this.toolbar.editor.toggleParser.actions.unorderedList.toggle();
+        });
     }
 
     /**
