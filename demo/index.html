@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <link rel="stylesheet" href="/jquery-markdown-editor.css" />
+
+        <script src="/jquery/dist/jquery.min.js"></script>
+        <script src="/jquery-editor.js"></script>
+
+        <style>
+
+            body {
+                background-color: #eee;
+            }
+
+            .container {
+                margin: 75px auto;
+                max-width: 600px;
+            }
+
+            .container textarea {
+                width: 100%;
+            }
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="container">
+            <textarea rows=8 id="test-area"></textarea>
+        </div>
+
+        <script>
+            $( document ).ready(function() {
+
+                window.testArea = $( "#test-area" ).markdownEditor();
+                window.testAreaEditor = window.testArea.data( "__jquery-markdown-editor" );
+
+            });
+        </script>
+    </body>
+
+</html>

@@ -57,7 +57,7 @@ export default class Link extends Action {
      * On action
      */
     _on() {
-        console.log( "Link ON" );
+        // console.log( "Link ON" );
     }
 
     /**
