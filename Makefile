@@ -19,7 +19,8 @@ build: clean fonticons stylesheets javascripts
 
 build.dev: set_dev build
 
-start: build.dev watch
+start: build.dev
+	$(NPM_BIN)/shell-exec "make watch" "build-tools/demo-server.js"
 
 set_dev:
 	@echo -e "\nDebug mode enabled\n"
