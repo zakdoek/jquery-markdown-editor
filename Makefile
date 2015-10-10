@@ -20,7 +20,7 @@ build: clean fonticons stylesheets javascripts
 build.dev: set_dev build
 
 start: build.dev
-	$(NPM_BIN)/shell-exec "make watch" "build-tools/demo-server.js"
+	$(NPM_BIN)/shell-exec "make watch" "make demo"
 
 set_dev:
 	@echo -e "\nDebug mode enabled\n"
@@ -87,6 +87,18 @@ javascripts.browserify:
 		$(NPM_BIN)/browserify -g uglifyify $(SOURCE_DIR)/js/jquery-editor.js | \
 			$(NPM_BIN)/uglifyjs -c > $(BUILD_DIR)/jquery-editor.js; \
 	fi
+
+# Demo files
+demo: demo.prepare demo.run
+
+demo.prepare:
+	@echo -e "\n Prepare demo...\n"
+	@mkdir -p $(BUILD_DIR)/demo/
+	@cp -r demo/* $(BUILD_DIR)/demo/
+
+demo.run:
+	@echo -e "\n Running server \n"
+	@build-tools/express-server.js
 
 # Watches
 watch:
